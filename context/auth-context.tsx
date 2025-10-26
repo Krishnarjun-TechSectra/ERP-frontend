@@ -1,95 +1,93 @@
+// app/providers/AuthProvider.tsx  (or /context/AuthContext.tsx)
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { CheckCircle2 } from "lucide-react";
+import {toast } from "react-toastify"
 
-type User = { email: string; role: "admin" | "employee"; name: string };
-type AuthContextType = {
-  user: User | null;
-  accessToken: string | null;
-  loading: boolean;
-  signUp: (data: {
-    email: string;
-    password: string;
-    name: string;
-    role: "admin" | "employee";
-  }) => Promise<void>;
-  signIn: (data: { email: string; password: string }) => Promise<void>;
-  signOut: () => void;
-};
+type User = any; // adapt shape if you want: { id, email, user_metadata }
+const AuthContext = createContext({
+  user: null as User | null,
+  loading: true,
+  signUp: async (email: string, password: string, metadata?: any) => {},
+  signIn: async (email: string, password: string) => {},
+  signOut: async () => {},
+});
 
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
-);
-
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    const loadUser = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-      credentials: "include",
+    // initial session check
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUser(data.session?.user ?? null);
+      setLoading(false);
+    };
+    init();
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
     });
-    if (res.ok) {
-      const data = await res.json();
-      setUser(data.user);
-    }
-  };
-    loadUser();
+
+    return () => sub.subscription.unsubscribe();
   }, []);
 
-  const signUp = async (data: {
-    email: string;
-    password: string;
-    name: string;
-    role: "admin" | "employee";
-  }) => {
-    setLoading(true);
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-      credentials: "include",
-    });
-    const resData = await res.json();
-    console.log(resData);
-    setUser(resData.user);
-    setAccessToken(resData.accessToken);
-    setLoading(false);
+  const signUp = async (email: string, password: string, metadata?: any) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: metadata },
+      });
+
+      if (error) throw error;
+
+      setUser(data.user ?? null);
+
+      toast.success("Account created successfully!", {
+        icon: <CheckCircle2 />,
+      });
+
+      router.push("/");
+    } catch (err: any) {
+      toast.error(err.message);
+      
+    }
   };
 
-  const signIn = async (data: { email: string; password: string }) => {
-    setLoading(true);
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-      credentials: "include",
-    });
-    const resData = await res.json();
-    setUser(resData.user);
-    setAccessToken(resData.accessToken);
-    setLoading(false);
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      setUser(data.user ?? null);
+
+      router.push("/");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   const signOut = async () => {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signout`, {
-      method: "POST",
-      credentials: "include",
-    });
+    await supabase.auth.signOut();
     setUser(null);
   };
 
-
-  console.log(user)
-
   return (
-    <AuthContext.Provider
-      value={{ user, accessToken, loading, signUp, signIn, signOut }}
-    >
+    <AuthContext.Provider value={{ user, loading, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);

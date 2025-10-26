@@ -1,14 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import AuthForm from "@/components/auth-form";
+import SignInForm from "@/components/auth/sign-in-form";
+import SignUpForm from "@/components/auth/sign-up-form";
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isSignIn, setIsSignIn] = useState(true);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
-      <AuthForm isLogin={isLogin} setIsLogin={setIsLogin} />
-    </main>
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      {isSignIn ? (
+        <SignInForm onToggleToSignUp={() => setIsSignIn(false)} />
+      ) : (
+        <SignUpForm onToggleToSignIn={() => setIsSignIn(true)} />
+      )}
+    </div>
   );
 }

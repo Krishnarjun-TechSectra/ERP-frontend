@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
 import {
@@ -11,83 +10,63 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { toast } from "sonner";
-import { useAuth } from "../../hooks/useAuth";
 
-interface AuthFormProps {
-  isLogin: boolean;
-  setIsLogin: (value: boolean) => void;
+import { Label } from "@radix-ui/react-label";
+import { useAuth } from "../../../context/auth-context";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+
+interface SignUpFormProps {
+  onToggleToSignIn: () => void;
 }
 
-export default function AuthForm({ isLogin, setIsLogin }: AuthFormProps) {
+export default function SignUpForm({ onToggleToSignIn }: SignUpFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
-    if (isLogin) {
-      try {
-        const result = await signIn({ email, password });
-      } catch (error) {
-        toast.error("Failed to sign in. Please check your credentials.");
-      }
-    } else {
-      try {
-        const result = await signUp({ email, password, name, role: "employee" });
-        console.log(result)
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to sign up. Please try again.");
-      }
-    }
+    await signUp(email, password, {
+      role: isAdmin ? "admin" : "employee",
+      name,
+    });
     setLoading(false);
     setEmail("");
     setPassword("");
     setName("");
+    setIsAdmin(false);
   };
 
   return (
     <div className="w-full max-w-md">
       <Card className="border-0 shadow-xl">
         <CardHeader className="space-y-2">
-          <CardTitle className="text-3xl">
-            {isLogin ? "Welcome Back" : "Create Account"}
-          </CardTitle>
-          <CardDescription>
-            {isLogin
-              ? "Sign in to your account to continue"
-              : "Join us today and get started"}
-          </CardDescription>
+          <CardTitle className="text-3xl">Create Account</CardTitle>
+          <CardDescription>Join us today and get started</CardDescription>
         </CardHeader>
 
         <CardContent>
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name Field (Signup only) */}
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 w-5 h-5 text-muted-foreground pointer-events-none" />
-                  <Input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="John Doe"
-                    className="pl-10"
-                  />
-                </div>
+            {/* Name Field */}
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <div className="relative">
+                <User className="absolute left-3 top-3 w-5 h-5 text-muted-foreground pointer-events-none" />
+                <Input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="John Doe"
+                  className="pl-10"
+                />
               </div>
-            )}
+            </div>
 
             {/* Email Field */}
             <div className="space-y-2">
@@ -107,14 +86,7 @@ export default function AuthForm({ isLogin, setIsLogin }: AuthFormProps) {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                {isLogin && (
-                  <a href="#" className="text-sm text-primary hover:underline">
-                    Forgot?
-                  </a>
-                )}
-              </div>
+              <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 w-5 h-5 text-muted-foreground pointer-events-none" />
                 <Input
@@ -125,6 +97,24 @@ export default function AuthForm({ isLogin, setIsLogin }: AuthFormProps) {
                   placeholder="••••••••"
                   className="pl-10"
                 />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <input
+                  id="admin-role"
+                  type="checkbox"
+                  checked={isAdmin}
+                  onChange={(e) => setIsAdmin(e.target.checked)}
+                  className="w-4 h-4 rounded border-input"
+                />
+                <Label
+                  htmlFor="admin-role"
+                  className="font-normal cursor-pointer"
+                >
+                  Sign up as Admin
+                </Label>
               </div>
             </div>
 
@@ -142,24 +132,22 @@ export default function AuthForm({ isLogin, setIsLogin }: AuthFormProps) {
                 </>
               ) : (
                 <>
-                  {isLogin ? "Sign In" : "Create Account"}
+                  Create Account
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </>
               )}
             </Button>
           </form>
 
-          {/* Toggle Auth Mode */}
+          {/* Toggle to Sign In */}
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              {isLogin
-                ? "Don't have an account? "
-                : "Already have an account? "}
+              Already have an account?{" "}
               <button
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={onToggleToSignIn}
                 className="text-primary font-semibold hover:underline transition"
               >
-                {isLogin ? "Sign up" : "Sign in"}
+                Sign in
               </button>
             </p>
           </div>
