@@ -1,33 +1,38 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { Mail, Lock, ArrowRight } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@radix-ui/react-label"
-import { useAuth } from "../../../context/auth-context"
-import { Button } from "../ui/button"
-import { Input } from "../ui/input"
-
+import type React from "react";
+import { useState } from "react";
+import { Mail, Lock, ArrowRight } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@radix-ui/react-label";
+import { useAuth } from "../../../context/auth-context";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 interface SignInFormProps {
-  onToggleToSignUp: () => void
+  onToggleToSignUp: () => void;
 }
 
 export default function SignInForm({ onToggleToSignUp }: SignInFormProps) {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-  const { signIn } = useAuth()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    await signIn(email, password)
-    setLoading(false)
-    setEmail("")
-    setPassword("")
-  }
+    e.preventDefault();
+    setLoading(true);
+    await signIn(email, password);
+    setLoading(false);
+    setEmail("");
+    setPassword("");
+  };
 
   return (
     <div className="w-full max-w-md">
@@ -77,7 +82,12 @@ export default function SignInForm({ onToggleToSignUp }: SignInFormProps) {
             </div>
 
             {/* Submit Button */}
-            <Button type="submit" disabled={loading} className="w-full mt-6" size="lg">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-6"
+              size="lg"
+            >
               {loading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
@@ -96,7 +106,10 @@ export default function SignInForm({ onToggleToSignUp }: SignInFormProps) {
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Don't have an account?{" "}
-              <button onClick={onToggleToSignUp} className="text-primary font-semibold hover:underline transition">
+              <button
+                onClick={onToggleToSignUp}
+                className="text-primary font-semibold hover:underline transition"
+              >
                 Sign up
               </button>
             </p>
@@ -116,5 +129,5 @@ export default function SignInForm({ onToggleToSignUp }: SignInFormProps) {
         </a>
       </p>
     </div>
-  )
+  );
 }

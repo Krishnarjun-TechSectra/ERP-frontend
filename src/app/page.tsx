@@ -17,9 +17,17 @@ export default function Home() {
             You have successfully logged in. Explore your dashboard and manage
             your account.
           </p>
-          <Button onClick={signOut} className="">
-            Sign Out
-          </Button>
+          <div className="space-x-6">
+            <Button onClick={signOut} className="">
+              Sign Out
+            </Button>
+            <Button
+            variant={'outline'}
+              onClick={() => (window.location.href = "/task-manager/dashboard")}
+            >
+              Go to Dashboard
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="bg-white shadow-lg rounded-2xl p-8 max-w-md w-full text-center space-y-4">

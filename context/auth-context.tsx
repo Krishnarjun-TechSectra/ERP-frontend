@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
-import {toast } from "react-toastify"
+import { toast } from "react-toastify";
 
 type User = any; // adapt shape if you want: { id, email, user_metadata }
 const AuthContext = createContext({
@@ -57,7 +57,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       router.push("/");
     } catch (err: any) {
       toast.error(err.message);
-      
     }
   };
 

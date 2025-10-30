@@ -120,3 +120,36 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+/* Scrollbar appears on hover, overlays content without expanding */
+.scrollbar-overlay {
+  overflow-y: scroll;
+}
+
+.scrollbar-overlay::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-overlay::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-overlay::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.scrollbar-overlay:hover::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+}
+
+/* Firefox */
+.scrollbar-overlay {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.scrollbar-overlay:hover {
+  scrollbar-color: #d1d5db transparent;
+}
