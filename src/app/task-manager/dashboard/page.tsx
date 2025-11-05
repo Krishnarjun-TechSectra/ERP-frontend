@@ -24,7 +24,12 @@ import {
 import TeamLeaderBoard from "@/components/tasks/team-leaderboard";
 import OverdueTasks from "@/components/tasks/overdue-tasks";
 import { useUsers } from "@/lib/hooks/users/use-user";
-import { TaskSchema, TaskSchemaType, TaskStatusEnum, ViewTypeEnum } from "@erp/shared-schema";
+import {
+  TaskSchema,
+  TaskSchemaType,
+  TaskStatusEnum,
+  ViewTypeEnum,
+} from "@erp/shared-schema";
 import { Calendar } from "@/components/ui/calendar";
 import { getTasks } from "@/services/tasks";
 import { TaskFilterDTO } from "@erp/shared-schema";
@@ -94,15 +99,15 @@ const TaskDashboardPage = () => {
   } = useGetTasks(filters);
 
   const tasksCompleted = tasks.filter(
-    (task: TaskSchemaType) => task.status === TaskStatusEnum.COMPLETED
+    (task: TaskSchemaType) => task.status === TaskStatusEnum.COMPLETED,
   ).length;
   const tasksPending = tasks.filter(
     (task: TaskSchemaType) =>
-      task.status !== "Completed" && new Date(task.deadline) >= new Date()
+      task.status !== "Completed" && new Date(task.deadline) >= new Date(),
   ).length;
   const tasksOverdue = tasks.filter(
     (task: TaskSchemaType) =>
-      task.status !== "Completed" && new Date(task.deadline) < new Date()
+      task.status !== "Completed" && new Date(task.deadline) < new Date(),
   ).length;
 
   const handleClearFilters = () => {
@@ -214,7 +219,7 @@ const TaskDashboardPage = () => {
                         <SelectItem key={y} value={y.toString()}>
                           {y}
                         </SelectItem>
-                      )
+                      ),
                     )}
                   </SelectGroup>
                 </SelectContent>
@@ -362,7 +367,7 @@ const TaskDashboardPage = () => {
       {/* Other components */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <TeamLeaderBoard />
-        <OverdueTasks/>
+        <OverdueTasks />
       </div>
     </TaskManagerLayout>
   );

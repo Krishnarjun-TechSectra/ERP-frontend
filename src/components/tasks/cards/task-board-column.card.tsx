@@ -4,16 +4,22 @@ import { TaskSchemaType } from "@erp/shared-schema";
 import { Calendar } from "lucide-react";
 import { useState } from "react";
 
-export const TaskCard = ({ task, onClick }: {
-  task: TaskSchemaType
-  onClick: any
+export const TaskCard = ({
+  task,
+  onClick,
+}: {
+  task: TaskSchemaType;
+  onClick: any;
 }) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: task.id,
-  });
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: task.id,
+    });
 
   const style = {
-    transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
+    transform: transform
+      ? `translate(${transform.x}px, ${transform.y}px)`
+      : undefined,
     opacity: isDragging ? 0.5 : 1,
   };
 
