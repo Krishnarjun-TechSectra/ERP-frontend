@@ -5,6 +5,9 @@ import { ModalProof } from "./dialogs/modal-proof";
 import { TaskDetailsModal } from "./dialogs/task-details.dialog";
 import { TaskStatusEnum } from "@erp/shared-schema";
 import type { TaskSchemaType } from "@erp/shared-schema";
+import NoDataFound from "../ui/no-data-found-card";
+import Error from "../ui/error-card";
+import { Loading } from "../ui/loading-card";
 
 export default function KanbanBoard({
   tasks,
@@ -15,8 +18,6 @@ export default function KanbanBoard({
   isError: boolean;
   isLoading: boolean;
 }) {
-  console.log(tasks);
-
   const [proofModalTask, setProofModalTask] = useState<any | null>(null);
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
 
@@ -29,7 +30,7 @@ export default function KanbanBoard({
 
     if (fromStatus !== toStatus) {
       const updatedTasks = tasks.map((t) =>
-        t.id === active.id ? { ...t, status: toStatus } : t,
+        t.id === active.id ? { ...t, status: toStatus } : t
       );
       // setTasks(updatedTasks);
 
@@ -40,25 +41,27 @@ export default function KanbanBoard({
     }
   };
 
-  console.log(TaskStatusEnum);
-
   return (
     <>
       <DndContext onDragEnd={handleDragEnd}>
-        {tasks ? (
+        {isLoading ? (
+          <Loading/>
+        ) : isError ? (
+         <Error/>
+        ) : tasks && tasks.length > 0 ? (
           <div className="grid grid-cols-4 gap-4">
             {Object.values(TaskStatusEnum).map((status) => (
               <Column
                 key={status}
                 id={status}
                 taskStatus={status}
-                tasks={tasks?.filter((t) => t.status === status)}
+                tasks={tasks.filter((t) => t.status === status)}
                 onTaskClick={(task) => setSelectedTask(task)}
               />
             ))}
           </div>
         ) : (
-          <div>No Tasks Were found</div>
+          <NoDataFound/>
         )}
       </DndContext>
 

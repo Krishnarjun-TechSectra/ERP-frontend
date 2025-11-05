@@ -27,10 +27,7 @@ export const ModalProof = ({ task, onClose }: ModalProofProps) => {
   };
 
   const handleSubmit = () => {
-    console.log("✅ Proof submitted for:", task.title);
-    console.log("📎 File:", file?.name);
-    console.log("📝 Notes:", proofText);
-
+    
     // You can later add API logic here to upload proof to backend.
     onClose();
   };

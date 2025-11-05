@@ -9,7 +9,7 @@ export async function GET() {
     console.error("Error fetching Tasks:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

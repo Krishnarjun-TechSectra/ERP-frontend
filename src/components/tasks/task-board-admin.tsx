@@ -1,17 +1,7 @@
 import TaskManagerLayout from "@/app/task-manager/shared-layout";
 import React from "react";
 import TeamLeaderBoard from "./team-leaderboard";
-import TaskBoard from "./task-status-dnd";
 import KpiScoreManager from "./kpi-score-manager";
-import { initialTasks } from "@/data/demo";
-
-const completedTasks = [
-  { name: "Client Meetings", date: "Oct 17, 2025" },
-  { name: "5 google reviews per week", date: "Oct 17, 2025" },
-  { name: "Update Success Marathon", date: "Oct 17, 2025" },
-  { name: "Update Lead Tracker", date: "Oct 17, 2025" },
-];
-const notask: any[] = [];
 
 const TaskBoardAdmin = () => {
   return (

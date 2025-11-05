@@ -99,15 +99,15 @@ const TaskDashboardPage = () => {
   } = useGetTasks(filters);
 
   const tasksCompleted = tasks.filter(
-    (task: TaskSchemaType) => task.status === TaskStatusEnum.COMPLETED,
+    (task: TaskSchemaType) => task.status === TaskStatusEnum.COMPLETED
   ).length;
   const tasksPending = tasks.filter(
     (task: TaskSchemaType) =>
-      task.status !== "Completed" && new Date(task.deadline) >= new Date(),
+      task.status !== "Completed" && new Date(task.deadline) >= new Date()
   ).length;
   const tasksOverdue = tasks.filter(
     (task: TaskSchemaType) =>
-      task.status !== "Completed" && new Date(task.deadline) < new Date(),
+      task.status !== "Completed" && new Date(task.deadline) < new Date()
   ).length;
 
   const handleClearFilters = () => {
@@ -219,7 +219,7 @@ const TaskDashboardPage = () => {
                         <SelectItem key={y} value={y.toString()}>
                           {y}
                         </SelectItem>
-                      ),
+                      )
                     )}
                   </SelectGroup>
                 </SelectContent>

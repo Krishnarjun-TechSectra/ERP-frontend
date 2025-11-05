@@ -5,19 +5,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { useUpdateTask } from "@/lib/hooks/tasks/use-updatetask";
 import { formatDateString } from "@/lib/utils/date-parser";
 import {
   TaskPriorityBgColorMap,
   TaskStatusBgColorMap,
 } from "@/lib/utils/task-status-color";
 import { TaskPriorityEnum, TaskStatusEnum } from "@erp/shared-schema";
-import { Calendar, User, Check, FileText, Layers } from "lucide-react";
+import { Calendar, User, Check, FileText, Layers, Loader2 } from "lucide-react";
+import { useState } from "react";
 
-export const TaskDetailsModal = ({ task, onClose, onComplete }: any) => {
-  console.log(task);
+export const TaskDetailsModal = ({ task, onClose }: any) => {
+  const [proofOfCompletion, setProofOfCompletion] = useState<string>("");
+  const { mutate: updateTask, isPending } = useUpdateTask();
+
+  const onComplete = () => {
+    if (!task) return;
+    updateTask({
+      id: task.id,
+      data: {
+        proofOfCompletion: proofOfCompletion,
+        status: TaskStatusEnum.COMPLETED,
+      },
+    });
+  };
   return (
     <Dialog open={!!task} onOpenChange={onClose}>
-      <DialogContent className="max-w-md space-y-4">
+      <DialogContent className="max-w-md space-y-3">
         <DialogHeader>
           <DialogTitle>{task.title}</DialogTitle>
         </DialogHeader>
@@ -67,17 +82,15 @@ export const TaskDetailsModal = ({ task, onClose, onComplete }: any) => {
         </div>
 
         {/* Completed Section */}
-        {task.status === "completed" ? (
-          <div className="space-y-2 bg-green-50 p-3 rounded">
-            <div className="flex items-center gap-1 text-green-700 font-medium">
-              <Check size={16} /> Completed on {task.completedDate}
-            </div>
-            {task.proof && (
+        {task.status === TaskStatusEnum.COMPLETED ? (
+          <div className="space-y-2 bg-green-50 p-3 rounded-md">
+          
+            {task.proofOfCompletion && (
               <div className="mt-2">
                 <div className="flex items-center gap-1 font-semibold text-green-700">
                   <FileText size={16} /> Proof of Completion
                 </div>
-                <p className="text-green-700 text-sm mt-1">{task.proof}</p>
+                <p className="text-green-700 text-sm mt-1">{task.proofOfCompletion}</p>
               </div>
             )}
           </div>
@@ -86,17 +99,28 @@ export const TaskDetailsModal = ({ task, onClose, onComplete }: any) => {
           <div className="space-y-2">
             <h3 className="font-semibold">Mark as Complete</h3>
             <p className="text-sm text-gray-500">Provide proof of completion</p>
-            <textarea
-              className="w-full border rounded p-2 text-sm"
+            <Textarea
               placeholder="Describe what you accomplished and provide evidence of completion..."
-              onChange={(e) => task.setProof(e.target.value)}
+              value={proofOfCompletion}
+              onChange={(e) => setProofOfCompletion(e.target.value)}
             />
             <div className="flex justify-end gap-2 mt-2">
-              <Button variant={"outline"} onClick={onClose}>
+              <Button
+                variant={"outline"}
+                onClick={onClose}
+                disabled={isPending}
+              >
                 Cancel
               </Button>
-              <Button onClick={() => onComplete(task)}>
-                <Check size={14} /> Complete Task
+              <Button onClick={() => onComplete()} disabled={isPending}>
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isPending ? (
+                  "Updating..."
+                ) : (
+                  <>
+                    <Check size={14} /> Complete Task
+                  </>
+                )}
               </Button>
             </div>
           </div>
