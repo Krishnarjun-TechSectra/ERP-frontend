@@ -1,19 +1,19 @@
-import { createTask } from "@/services/tasks";
+import { deleteTask } from "@/services/tasks";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-export function useCreateTask() {
+export function useDeleteTask() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createTask,
+    mutationFn: deleteTask,
     onSuccess: () => {
-      toast.success("Task created successfully!");
+      toast.success("Task deleted successfully!");
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to create task");
-      console.error("Create Task Error:", error);
+      toast.error(error.message || "Failed to delete task");
+      console.error("Delete Task Error:", error);
     },
   });
 }

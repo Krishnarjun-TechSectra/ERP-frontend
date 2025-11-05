@@ -22,7 +22,7 @@ export default function Home() {
               Sign Out
             </Button>
             <Button
-            variant={'outline'}
+              variant={"outline"}
               onClick={() => (window.location.href = "/task-manager/dashboard")}
             >
               Go to Dashboard

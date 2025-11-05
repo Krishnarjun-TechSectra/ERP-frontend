@@ -6,7 +6,7 @@ interface Task {
   description: string;
   assignee: string;
   priority: string;
-  dueDate: string;
+  deadline: string;
   priorityColor: string;
 }
 
@@ -33,7 +33,7 @@ export default function TaskCard({ task }: TaskCardProps) {
         <div className="flex items-center gap-2 text-red-600 font-medium">
           <AlertCircle size={18} />
           <Calendar size={18} />
-          <span>{task.dueDate}</span>
+          <span>{task.deadline}</span>
         </div>
       </div>
     </div>

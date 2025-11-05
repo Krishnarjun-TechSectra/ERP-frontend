@@ -28,13 +28,13 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { Calendar } from "../ui/calendar";
-import { useKpi } from "@/lib/hooks/tasks/use-kpi";
+import { Calendar } from "../../ui/calendar";
+import { useGetKpis } from "@/lib/hooks/kpi/use-getkpi";
 import { useUsers } from "@/lib/hooks/users/use-user";
 import z from "zod";
 import { toast } from "react-toastify";
 import { useCreateTask } from "@/lib/hooks/tasks/use-createtask";
-import { CreateTaskSchema } from "@/lib/schemas/task/schemas";
+import { CreateTaskSchema } from "@erp/shared-schema";
 
 export default function CreateTaskDialog() {
   const [form, setForm] = useState({
@@ -48,7 +48,7 @@ export default function CreateTaskDialog() {
     recurringFrequency: "",
   });
   const [open, setOpen] = useState(false);
-  const { data: kpis = [], isLoading: kpiLoading } = useKpi();
+  const { data: kpis = [], isLoading: kpiLoading } = useGetKpis();
   const { data: users = [], isLoading: usersLoading } = useUsers();
   const { mutate: createTask, isPending } = useCreateTask();
 
@@ -58,7 +58,6 @@ export default function CreateTaskDialog() {
 
   const handleSubmit = () => {
     try {
-      // ✅ Zod Validation
       const validated = CreateTaskSchema.parse(form);
       createTask(validated, {
         onSettled: () => {
@@ -70,7 +69,7 @@ export default function CreateTaskDialog() {
             priority: "medium",
             deadline: "",
             isRecurring: false,
-            recurringFrequency: "daily",
+            recurringFrequency: "",
           });
           setOpen(false);
         },

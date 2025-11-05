@@ -1,9 +1,7 @@
 "use client";
 
-import {
-  useDroppable,
-  useDraggable,
-} from "@dnd-kit/core";
+import { formatDateString } from "@/lib/utils/date-parser";
+import { useDroppable } from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -17,7 +15,7 @@ type Task = {
   date: string;
 };
 
-type TaskBoardCardProps = {
+type TaskBoardColumnProps = {
   title: string;
   columnId: string;
   tasks: Task[];
@@ -45,21 +43,21 @@ function SortableTask({ task, columnId }: any) {
       {...listeners}
       className="bg-white rounded-xl shadow-sm px-4 py-6 flex flex-col border hover:scale-[1.02] transition-transform duration-200 cursor-grab"
     >
-      <p className="font-medium text-gray-900">{task.name}</p>
+      <p className="font-medium text-gray-900">{task.title}</p>
       <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
         <CalendarIcon className="w-4 h-4" />
-        <span>{task.date}</span>
+        <span>{formatDateString(task.deadline)}</span>
       </div>
     </div>
   );
 }
 
-export default function TaskBoardCard({
+export default function TaskBoardColumn({
   title,
   columnId,
   tasks,
   bgColor = "bg-green-50",
-}: TaskBoardCardProps) {
+}: TaskBoardColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: columnId,
     data: { columnId },
@@ -92,9 +90,9 @@ export default function TaskBoardCard({
               No tasks
             </div>
           ) : (
-            tasks.map((task) => (
+            tasks.map((task, i:number) => (
               <SortableTask
-                key={`${columnId}-${task.name}`}
+                key={i}
                 task={task}
                 columnId={columnId}
               />

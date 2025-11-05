@@ -14,7 +14,7 @@ const TaskManagerNavbar = () => {
   const searchParams = useSearchParams();
   const currentIsAdmin = searchParams.get("isAdminView") === "true";
   const [isAdmin, setIsAdmin] = useState(currentIsAdmin);
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     setIsAdmin(currentIsAdmin);

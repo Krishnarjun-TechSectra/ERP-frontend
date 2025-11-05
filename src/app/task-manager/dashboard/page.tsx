@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import TaskManagerLayout from "../shared-layout";
 import { Label } from "@/components/ui/label";
 import {
@@ -10,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import TaskMetricsCard from "@/components/tasks/metrics.card";
+import TaskMetricsCard from "@/components/tasks/cards/metrics.card";
 import {
   CircleCheckBig,
   Clock,
@@ -20,10 +21,16 @@ import {
 } from "lucide-react";
 import TeamLeaderBoard from "@/components/tasks/team-leaderboard";
 import OverdueTasks from "@/components/tasks/overdue-tasks";
+import { useUsers } from "@/lib/hooks/users/use-user";
 
-const viewType = ["Daily", "Weekly", "Monthly", "Yearly"];
+const viewTypes = ["Daily", "Weekly", "Monthly", "Yearly"];
 
 const TaskDashboardPage = () => {
+  const { data: users = [], isLoading: usersLoading } = useUsers();
+  const [viewType, setViewType] = useState("daily");
+  const [person, setPerson] = useState();
+
+  const handleToggle = () => {};
   return (
     <TaskManagerLayout>
       <div className="space-y-3 mb-4">
@@ -45,9 +52,9 @@ const TaskDashboardPage = () => {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>View Type</SelectLabel>
-                {viewType.map((type, i) => (
-                  <SelectItem key={i} value={type}>
-                    {type}
+                {users.map((user: any, i: number) => (
+                  <SelectItem key={i} value={user.id}>
+                    {user.name}
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -63,7 +70,7 @@ const TaskDashboardPage = () => {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>View Type</SelectLabel>
-                {viewType.map((type, i) => (
+                {viewTypes.map((type, i) => (
                   <SelectItem key={i} value={type}>
                     {type}
                   </SelectItem>
@@ -112,10 +119,9 @@ const TaskDashboardPage = () => {
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <TeamLeaderBoard/>
-                <OverdueTasks/>
+        <TeamLeaderBoard />
+        <OverdueTasks />
       </div>
-
     </TaskManagerLayout>
   );
 };
