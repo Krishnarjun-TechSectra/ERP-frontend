@@ -5,6 +5,6 @@ export function useGetTaskById(id: string) {
   return useQuery({
     queryKey: ["task", id],
     queryFn: () => getTaskById(id),
-    enabled: !!id
+    enabled: !!id,
   });
 }

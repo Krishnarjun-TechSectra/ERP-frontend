@@ -4,12 +4,11 @@ export function formatDateString(dateString: string): string {
 
   // Define formatting options
   const options: Intl.DateTimeFormatOptions = {
-    month: 'short', // e.g., "Nov"
-    day: 'numeric', // e.g., "2"
-    year: 'numeric' // e.g., "2025"
+    month: "short", // e.g., "Nov"
+    day: "numeric", // e.g., "2"
+    year: "numeric", // e.g., "2025"
   };
 
   // Format date in English (US)
-  return new Intl.DateTimeFormat('en-US', options).format(dateObject);
+  return new Intl.DateTimeFormat("en-US", options).format(dateObject);
 }
-

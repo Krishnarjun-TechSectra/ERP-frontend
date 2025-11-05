@@ -12,7 +12,11 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { useEffect, useMemo, useState } from "react";
 import TaskBoardCard from "./cards/task-board-column.card";
 
-export default function TaskBoard({ tasks: allTasks, isLoading, isError }: any) {
+export default function TaskBoard({
+  tasks: allTasks,
+  isLoading,
+  isError,
+}: any) {
   const [tasks, setTasks] = useState<any[]>([]);
 
   useEffect(() => {
@@ -63,7 +67,7 @@ export default function TaskBoard({ tasks: allTasks, isLoading, isError }: any) 
 
       const oldIndex = items.findIndex((t) => t.id === activeTask.id);
       const newIndex = items.findIndex(
-        (t) => t.id === over.data.current?.task?.id
+        (t) => t.id === over.data.current?.task?.id,
       );
 
       if (oldIndex !== -1 && newIndex !== -1) {
@@ -86,10 +90,10 @@ export default function TaskBoard({ tasks: allTasks, isLoading, isError }: any) 
       toColumn === "todo"
         ? "to_do"
         : toColumn === "inprogress"
-        ? "in_progress"
-        : toColumn === "completed"
-        ? "completed"
-        : moved.status;
+          ? "in_progress"
+          : toColumn === "completed"
+            ? "completed"
+            : moved.status;
 
     dest.push(moved);
 

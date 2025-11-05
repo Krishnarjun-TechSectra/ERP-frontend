@@ -7,7 +7,8 @@ export function useUpdateKpi() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => updateKpi(id, data),
+    mutationFn: ({ id, data }: { id: string; data: any }) =>
+      updateKpi(id, data),
     onSuccess: () => {
       toast.success("KPI updated successfully!");
       queryClient.invalidateQueries({ queryKey: ["kpis"] });

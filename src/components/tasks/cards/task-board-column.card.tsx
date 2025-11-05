@@ -90,12 +90,8 @@ export default function TaskBoardColumn({
               No tasks
             </div>
           ) : (
-            tasks.map((task, i:number) => (
-              <SortableTask
-                key={i}
-                task={task}
-                columnId={columnId}
-              />
+            tasks.map((task, i: number) => (
+              <SortableTask key={i} task={task} columnId={columnId} />
             ))
           )}
         </div>

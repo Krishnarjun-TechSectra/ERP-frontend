@@ -24,7 +24,7 @@ const TaskBoardEmployee = () => {
     isError,
     refetch,
   } = useGetTasks({ deadline: searchParams.get("deadline") || undefined });
-  console.log(tasks)
+  console.log(tasks);
 
   const handleClearFilter = () => {
     setDate(null);

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTasks } from "@/services/tasks"
+import { getTasks } from "@/services/tasks";
 import { TaskFilterDTO } from "@erp/shared-schema";
 
 export function useGetTasks(filters?: TaskFilterDTO) {

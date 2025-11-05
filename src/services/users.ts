@@ -1,8 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import {
-  CreateUserDTO,
-  UpdateUserDTO,
-} from "@erp/shared-schema";
+import { CreateUserDTO, UpdateUserDTO } from "@erp/shared-schema";
 
 /* -------------------------------
    USER FRONTEND SERVICE
@@ -14,7 +11,6 @@ export async function createUser(data: CreateUserDTO) {
     body: JSON.stringify(data),
   });
 }
-
 
 export async function getUsers() {
   return apiClient("/user", {
