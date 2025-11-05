@@ -73,7 +73,7 @@ export default function CreateTaskDialog() {
       });
     } catch (err) {
       if (err instanceof z.ZodError) {
-        console.log(err)
+        console.log(err);
         toast.error(err.issues[0].message);
       } else {
         toast.error("Unexpected error");

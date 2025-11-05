@@ -1,4 +1,5 @@
 import { Trophy, Medal, Award } from "lucide-react";
+import React from "react";
 
 interface LeaderboardCardProps {
   name: string;
@@ -66,7 +67,7 @@ export default function LeaderboardCard({
         </div>
       </div>
       <div className="text-right">
-        <p className="font-bold text-lg">{productivity}%</p>
+        <p className="font-bold text-lg">{productivity.toFixed(2)}%</p>
         <p className="text-gray-500 text-sm">productivity</p>
       </div>
     </div>

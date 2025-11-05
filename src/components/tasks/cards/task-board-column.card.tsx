@@ -1,101 +1,45 @@
-"use client";
-
 import { formatDateString } from "@/lib/utils/date-parser";
-import { useDroppable } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { CalendarIcon } from "lucide-react";
+import { useDraggable } from "@dnd-kit/core";
+import { TaskSchemaType } from "@erp/shared-schema";
+import { Calendar } from "lucide-react";
+import { useState } from "react";
 
-type Task = {
-  name: string;
-  date: string;
-};
-
-type TaskBoardColumnProps = {
-  title: string;
-  columnId: string;
-  tasks: Task[];
-  bgColor?: string;
-};
-
-// Each draggable task
-function SortableTask({ task, columnId }: any) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id: `${columnId}-${task.name}`,
-      data: { task, columnId },
-    });
+export const TaskCard = ({ task, onClick }: {
+  task: TaskSchemaType
+  onClick: any
+}) => {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: task.id,
+  });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
+    transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const [dragging, setDragging] = useState(false);
+
+  const handleMouseDown = () => setDragging(false);
+  const handleMouseMove = () => setDragging(true);
+  const handleMouseUp = () => {
+    if (!dragging) onClick(task); // open modal only if not dragged
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
       {...listeners}
-      className="bg-white rounded-xl shadow-sm px-4 py-6 flex flex-col border hover:scale-[1.02] transition-transform duration-200 cursor-grab"
+      {...attributes}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      className="bg-white px-4 py-6 rounded-lg shadow cursor-grab hover:shadow-md transition"
     >
-      <p className="font-medium text-gray-900">{task.title}</p>
-      <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-        <CalendarIcon className="w-4 h-4" />
-        <span>{formatDateString(task.deadline)}</span>
+      <h3 className="font-medium text-base text-black">{task.title}</h3>
+      <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+        <Calendar size={12} /> {formatDateString(task.deadline)}
       </div>
     </div>
   );
-}
-
-export default function TaskBoardColumn({
-  title,
-  columnId,
-  tasks,
-  bgColor = "bg-green-50",
-}: TaskBoardColumnProps) {
-  const { setNodeRef, isOver } = useDroppable({
-    id: columnId,
-    data: { columnId },
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      className={`p-6 rounded-xl shadow-md border border-gray-200 transition-colors duration-200 ${
-        isOver ? "ring-2 ring-blue-400" : ""
-      } ${bgColor}`}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="font-semibold text-gray-900">{title}</h2>
-        <span className="bg-gray-100 text-gray-800 font-medium rounded-full px-2 py-0.5 text-sm">
-          {tasks.length}
-        </span>
-      </div>
-
-      {/* Sortable List of Tasks */}
-      <SortableContext
-        id={columnId}
-        items={tasks.map((t) => `${columnId}-${t.name}`)}
-        strategy={verticalListSortingStrategy}
-      >
-        <div className="flex flex-col gap-3 min-h-[120px]">
-          {tasks.length === 0 ? (
-            <div className="flex justify-center items-center text-sm text-gray-600 py-6">
-              No tasks
-            </div>
-          ) : (
-            tasks.map((task, i: number) => (
-              <SortableTask key={i} task={task} columnId={columnId} />
-            ))
-          )}
-        </div>
-      </SortableContext>
-    </div>
-  );
-}
+};

@@ -34,7 +34,7 @@ const TaskBoardAdmin = () => {
             View and manage tasks for selected team member
           </p>
         </div>
-        <TaskBoard initialTasks={initialTasks} />
+        {/* <TaskBoard initialTasks={initialTasks} /> */}
         <KpiScoreManager />
       </div>
     </TaskManagerLayout>

@@ -1,49 +1,69 @@
+"use client";
+
 import TaskManagerLayout from "@/app/task-manager/shared-layout";
-import { initialTasks } from "@/data/demo";
 import { Label } from "@radix-ui/react-label";
 import { RotateCcw, ChevronDownIcon, X } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CreateKpiDialog from "./dialogs/create-kpi-dialog";
 import CreateTaskDialog from "./dialogs/create-task-dialog";
-import TaskBoard from "./task-status-dnd";
+import KanbanBoard from "./task-status-dnd";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useGetTasks } from "@/lib/hooks/tasks/use-gettask.";
+import { ViewTypeEnum } from "@erp/shared-schema";
 
 const TaskBoardEmployee = () => {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState<Date | null>(null);
+
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const {
-    data: tasks,
-    isLoading,
-    isError,
-    refetch,
-  } = useGetTasks({ deadline: searchParams.get("deadline") || undefined });
-  console.log(tasks);
 
-  const handleClearFilter = () => {
-    setDate(null);
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("deadline");
-    router.push(`${pathname}?${params.toString()}`);
-  };
-  const handleFilter = (selectedDate: Date | undefined) => {
+  const dateParam = searchParams.get("date");
+
+  useEffect(() => {
+    if (dateParam) {
+      setDate(new Date(dateParam));
+    } else {
+      setDate(null);
+    }
+  }, [dateParam]);
+
+  const filters = date ? { date, viewType: ViewTypeEnum.DAILY } : undefined;
+
+  const { data: tasks, isLoading, isError, refetch } = useGetTasks(filters);
+
+  const handleFilter = (selectedDate?: Date) => {
     setDate(selectedDate || null);
     const params = new URLSearchParams(searchParams.toString());
+
     if (selectedDate) {
-      params.set("deadline", selectedDate.toISOString().split("T")[0]);
+      params.set("date", selectedDate.toISOString());
+      params.set("viewType", ViewTypeEnum.DAILY); // ✅ Always set daily view
+    } else {
+      params.delete("date");
+      params.delete("viewType"); // remove viewType if filter cleared
     }
+
     router.push(`${pathname}?${params.toString()}`);
     setOpen(false);
   };
 
+  // ✅ Handle filter clear
+  const handleClearFilter = () => {
+    setDate(null);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("date");
+    params.delete("viewType");
+    router.push(pathname);
+  };
+
   return (
     <TaskManagerLayout>
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="space-y-3">
           <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">
@@ -54,15 +74,16 @@ const TaskBoardEmployee = () => {
           </p>
         </div>
         <div className="flex gap-2 justify-end">
-          <Button variant="outline">
-            <RotateCcw /> Reset Data
+          <Button variant="outline" onClick={() => refetch()}>
+            <RotateCcw className="w-4 h-4 mr-1" />
+            Reset Data
           </Button>
           <CreateKpiDialog />
           <CreateTaskDialog />
         </div>
       </div>
 
-      {/* filter part */}
+      {/* Filter Section */}
       <div className="p-4 md:p-6 border border-gray-300 rounded-lg flex items-center gap-2 mb-4 shadow-sm">
         <Label htmlFor="date" className="px-1">
           Due Date:
@@ -76,7 +97,7 @@ const TaskBoardEmployee = () => {
               className="w-48 justify-between font-normal"
             >
               {date ? date.toLocaleDateString() : "Select date"}
-              <ChevronDownIcon />
+              <ChevronDownIcon className="w-4 h-4" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto overflow-hidden p-0" align="start">
@@ -84,14 +105,11 @@ const TaskBoardEmployee = () => {
               mode="single"
               selected={date ?? undefined}
               captionLayout="dropdown"
-              onSelect={(selectedDate) => {
-                handleFilter(selectedDate);
-              }}
+              onSelect={handleFilter}
             />
           </PopoverContent>
         </Popover>
 
-        {/* Show "Clear Filter" only when a date is selected */}
         {date && (
           <Button
             variant="outline"
@@ -104,7 +122,7 @@ const TaskBoardEmployee = () => {
         )}
       </div>
 
-      <TaskBoard tasks={tasks} isError={isError} isLoading={isLoading} />
+      <KanbanBoard tasks={tasks} isError={isError} isLoading={isLoading} />
     </TaskManagerLayout>
   );
 };

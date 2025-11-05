@@ -16,15 +16,18 @@ export async function getTasks(filters?: TaskFilterDTO) {
   const query = filters
     ? "?" +
       new URLSearchParams(
-        Object.entries(filters).reduce(
-          (acc, [key, val]) => {
-            if (val !== undefined && val !== null) acc[key] = String(val);
-            return acc;
-          },
-          {} as Record<string, string>,
-        ),
+        Object.entries(filters).reduce((acc, [key, val]) => {
+          if (val !== undefined && val !== null) {
+           
+            acc[key] = val instanceof Date ? val.toISOString() : String(val);
+          }
+          return acc;
+        }, {} as Record<string, string>)
       ).toString()
     : "";
+
+  console.log("Generated Query:", query);
+
   return apiClient(`/task${query}`, {
     method: "GET",
   });
