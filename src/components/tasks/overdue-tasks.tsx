@@ -1,7 +1,6 @@
 import React from "react";
-import TaskCard from "./cards/overdue-task.card";
-import { TaskSchemaType } from "@erp/shared-schema";
 import { useGetOverdueTasks } from "@/lib/hooks/tasks/use-get-overduetasks";
+import OverdueTaskCard from "./cards/overdue-task.card";
 
 const OverdueTasks = () => {
   const { data: tasksOverdue = [], isLoading: kpiLoading } =
@@ -21,7 +20,7 @@ const OverdueTasks = () => {
       <div className="space-y-4 max-h-[400px] overflow-y-auto scrollbar-overlay">
         {tasksOverdue?.length !== 0 &&
           tasksOverdue?.map((task: any) => (
-            <TaskCard key={task.id} task={task} />
+            <OverdueTaskCard key={task.id} task={task} />
           ))}
       </div>
     </div>

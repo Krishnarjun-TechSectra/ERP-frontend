@@ -84,13 +84,14 @@ export const TaskDetailsModal = ({ task, onClose }: any) => {
         {/* Completed Section */}
         {task.status === TaskStatusEnum.COMPLETED ? (
           <div className="space-y-2 bg-green-50 p-3 rounded-md">
-          
             {task.proofOfCompletion && (
               <div className="mt-2">
                 <div className="flex items-center gap-1 font-semibold text-green-700">
                   <FileText size={16} /> Proof of Completion
                 </div>
-                <p className="text-green-700 text-sm mt-1">{task.proofOfCompletion}</p>
+                <p className="text-green-700 text-sm mt-1">
+                  {task.proofOfCompletion}
+                </p>
               </div>
             )}
           </div>

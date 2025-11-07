@@ -1,7 +1,8 @@
 import { useDroppable } from "@dnd-kit/core";
-import { TaskCard } from "./cards/task-board-column.card";
 import { TaskStatusEnum } from "@erp/shared-schema";
 import { TaskStatusBgColorMap } from "@/lib/utils/task-status-color";
+import { TaskCard } from "./task-card";
+
 
 interface ColumnProps {
   id: string;
@@ -16,9 +17,8 @@ export const Column = ({ id, tasks, onTaskClick, taskStatus }: ColumnProps) => {
   return (
     <div
       ref={setNodeRef}
-      className={`p-6 rounded-xl shadow-md border border-gray-200 transition-colors duration-200 ${TaskStatusBgColorMap[taskStatus]} ring-gray-200 ring-1`}
+      className={`p-6 rounded-xl shadow-md border border-gray-200 transition-colors duration-200 ${TaskStatusBgColorMap[taskStatus]} ring-gray-200 ring-1 min-h-[400px]`}
     >
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-semibold text-gray-900">{taskStatus}</h2>
         <span className="bg-gray-100 text-gray-800 font-medium rounded-full px-2 py-0.5 text-sm">

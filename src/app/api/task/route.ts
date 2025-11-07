@@ -1,26 +1,26 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { CreateTaskSchema, TaskFilterSchema } from "@erp/shared-schema";
 import { getTasks, createTask } from "@/services/tasks";
 
-export async function GET(request: Request) {
+export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(req.url);
     const filters = Object.fromEntries(searchParams.entries());
     const parsed = TaskFilterSchema.parse(filters);
     const data = await getTasks(parsed);
     return NextResponse.json(data, { status: 200 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error fetching Tasks:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await req.json();
     const parsed = CreateTaskSchema.parse(body);
     const data = await createTask(parsed);
     return NextResponse.json(data, { status: 201 });
@@ -28,13 +28,13 @@ export async function POST(request: Request) {
     if (error.name === "ZodError") {
       return NextResponse.json(
         { error: "Validation failed", details: error.errors },
-        { status: 400 },
+        { status: 400 }
       );
     }
     console.error("Error creating Task:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
