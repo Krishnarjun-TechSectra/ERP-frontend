@@ -85,7 +85,6 @@ export const demotask = [
   },
 ];
 
-
 export const initialTasks = {
   todo: [
     {
@@ -128,4 +127,4 @@ export const initialTasks = {
   inprogress: [],
   completed: [],
   overdue: [],
-}
+};

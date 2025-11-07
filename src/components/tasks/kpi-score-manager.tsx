@@ -36,7 +36,8 @@ export default function KpiScoreManager() {
     <div className="p-6 border border-gray-200 rounded-xl shadow-sm">
       <h2 className="text-lg font-semibold">KPI Score Management</h2>
       <p className="text-sm text-muted-foreground mb-4">
-        Manually set KPI scores for each employee (separate from productivity score)
+        Manually set KPI scores for each employee (separate from productivity
+        score)
       </p>
 
       <div className="space-y-3">
@@ -49,7 +50,9 @@ export default function KpiScoreManager() {
                   <h3 className="font-medium">{emp.name}</h3>
                   <p className="text-sm text-muted-foreground">
                     Current KPI Score:{" "}
-                    {emp.currentScore !== null ? `${emp.currentScore}%` : "Not set"}
+                    {emp.currentScore !== null
+                      ? `${emp.currentScore}%`
+                      : "Not set"}
                   </p>
                 </div>
               </div>

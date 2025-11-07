@@ -16,15 +16,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2, Plus } from "lucide-react";
 import clsx from "clsx";
-import { useCreateKPI } from "@/lib/hooks/tasks/use-createkpi";
-import { CreateKpiSchema } from "@/lib/schemas/task/kpi";
+import { useCreateKpi } from "@/lib/hooks/kpi/use-createkpi";
+import { CreateKpiSchema } from "@erp/shared-schema";
 import { toast } from "react-toastify";
 
 export default function CreateKpiDialog() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedColor, setSelectedColor] = useState<string>("");
-  const { mutate: createKPI, isPending } = useCreateKPI();
+  const { mutate: createKPI, isPending } = useCreateKpi();
 
   const colors = [
     "#2563eb", // blue
@@ -104,7 +104,7 @@ export default function CreateKpiDialog() {
                     "w-8 h-8 rounded-md border-2 transition-all",
                     selectedColor === color
                       ? "border-black scale-105"
-                      : "border-transparent hover:scale-105"
+                      : "border-transparent hover:scale-105",
                   )}
                   style={{ backgroundColor: color }}
                   onClick={() => setSelectedColor(color)}

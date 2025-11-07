@@ -1,104 +1,85 @@
-"use client";
-
-import {
-  DndContext,
-  DragEndEvent,
-  closestCorners,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
 import { useState } from "react";
-import TaskBoardCard from "./task-board.card";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { Column } from "./task-column";
+import { ModalProof } from "./dialogs/modal-proof";
+import { TaskDetailsModal } from "./dialogs/task-details.dialog";
+import { TaskStatusEnum } from "@erp/shared-schema";
+import type { TaskSchemaType } from "@erp/shared-schema";
+import NoDataFound from "../ui/no-data-found-card";
+import Error from "../ui/error-card";
+import { Loading } from "../ui/loading-card";
 
-export default function TaskBoard({ initialTasks }: any) {
-  const [tasks, setTasks] = useState(initialTasks);
-
-  const sensors = useSensors(useSensor(PointerSensor));
+export default function KanbanBoard({
+  tasks,
+  isError,
+  isLoading,
+}: {
+  tasks: TaskSchemaType[];
+  isError: boolean;
+  isLoading: boolean;
+}) {
+  const [proofModalTask, setProofModalTask] = useState<any | null>(null);
+  const [selectedTask, setSelectedTask] = useState<any | null>(null);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
 
-    const fromColumn = active.data.current?.columnId;
-    const toColumn = over.data.current?.columnId;
+    const fromStatus = tasks.find((t) => t.id === active.id)?.status;
+    const toStatus = over.id as any["status"];
 
-    if (!fromColumn || !toColumn) return;
+    if (fromStatus !== toStatus) {
+      const updatedTasks = tasks.map((t) =>
+        t.id === active.id ? { ...t, status: toStatus } : t
+      );
+      // setTasks(updatedTasks);
 
-    const activeTask = active.data.current?.task;
-
-    // Reorder within same column
-    if (fromColumn === toColumn) {
-      setTasks((prev: any) => {
-        const updated = { ...prev };
-        const columnTasks = [...updated[fromColumn]];
-
-        const oldIndex = columnTasks.findIndex(
-          (t) => t.name === activeTask.name
-        );
-        const newIndex = columnTasks.findIndex(
-          (t) => t.name === over.data.current?.task?.name
-        );
-
-        if (oldIndex !== -1 && newIndex !== -1) {
-          updated[fromColumn] = arrayMove(columnTasks, oldIndex, newIndex);
-        }
-
-        return updated;
-      });
-      return;
+      if (toStatus === "completed") {
+        const movedTask = tasks.find((t) => t.id === active.id);
+        if (movedTask) setProofModalTask(movedTask);
+      }
     }
-
-    // Move across columns
-    setTasks((prev: any) => {
-      const updated = { ...prev };
-      const source = [...updated[fromColumn]];
-      const dest = [...updated[toColumn]];
-
-      const idx = source.findIndex((t) => t.name === activeTask.name);
-      const [moved] = source.splice(idx, 1);
-      dest.push(moved);
-
-      updated[fromColumn] = source;
-      updated[toColumn] = dest;
-
-      return updated;
-    });
   };
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <TaskBoardCard
-          title="To Do"
-          columnId="todo"
-          tasks={tasks.todo}
-          bgColor="bg-gray-100"
+    <>
+      <DndContext onDragEnd={handleDragEnd}>
+        {isLoading ? (
+          <Loading/>
+        ) : isError ? (
+         <Error/>
+        ) : tasks && tasks.length > 0 ? (
+          <div className="grid grid-cols-4 gap-4">
+            {Object.values(TaskStatusEnum).map((status) => (
+              <Column
+                key={status}
+                id={status}
+                taskStatus={status}
+                tasks={tasks.filter((t) => t.status === status)}
+                onTaskClick={(task) => setSelectedTask(task)}
+              />
+            ))}
+          </div>
+        ) : (
+          <NoDataFound/>
+        )}
+      </DndContext>
+
+      {/* Proof Modal when moved to Completed */}
+      {proofModalTask && (
+        <ModalProof
+          task={proofModalTask}
+          onClose={() => setProofModalTask(null)}
         />
-        <TaskBoardCard
-          title="In Progress"
-          columnId="inprogress"
-          tasks={tasks.inprogress}
-          bgColor="bg-blue-50"
+      )}
+
+      {/* Task Details Modal when clicked */}
+      {selectedTask && (
+        <TaskDetailsModal
+          task={selectedTask}
+          onClose={() => setSelectedTask(null)}
         />
-        <TaskBoardCard
-          title="Completed"
-          columnId="completed"
-          tasks={tasks.completed}
-          bgColor="bg-green-50"
-        />
-        <TaskBoardCard
-          title="Overdue"
-          columnId="overdue"
-          tasks={tasks.overdue}
-          bgColor="bg-red-50"
-        />
-      </div>
-    </DndContext>
+      )}
+    </>
   );
 }

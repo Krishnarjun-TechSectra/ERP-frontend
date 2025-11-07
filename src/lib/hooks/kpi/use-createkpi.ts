@@ -1,18 +1,19 @@
-import { createKPI } from "@/services/tasks";
+// use_create_kpi.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { createKpi } from "@/services/kpi";
 
-export function useCreateKPI() {
+export function useCreateKpi() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createKPI,
-    onSuccess: (data) => {
-      toast.success("KPI created successfully");
+    mutationFn: createKpi,
+    onSuccess: () => {
+      toast.success("KPI created successfully!");
       queryClient.invalidateQueries({ queryKey: ["kpis"] });
     },
     onError: (error: any) => {
-      toast.error("Failed to create KPI");
+      toast.error(error.message || "Failed to create KPI");
       console.error("Create KPI Error:", error);
     },
   });

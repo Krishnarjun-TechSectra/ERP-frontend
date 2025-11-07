@@ -28,27 +28,33 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { Calendar } from "../ui/calendar";
-import { useKpi } from "@/lib/hooks/tasks/use-kpi";
+import { Calendar } from "../../ui/calendar";
+import { useGetKpis } from "@/lib/hooks/kpi/use-getkpi";
 import { useUsers } from "@/lib/hooks/users/use-user";
 import z from "zod";
 import { toast } from "react-toastify";
 import { useCreateTask } from "@/lib/hooks/tasks/use-createtask";
-import { CreateTaskSchema } from "@/lib/schemas/task/schemas";
+import {
+  CreateTaskSchema,
+  TaskPriorityEnum,
+  RecurringFrequencyEnum,
+} from "@erp/shared-schema";
+
+const initialState = {
+  title: "",
+  description: "",
+  kpiId: "",
+  assignedUserId: "",
+  priority: TaskPriorityEnum.MEDIUM,
+  deadline: "",
+  isRecurring: false,
+  recurringFrequency: undefined,
+};
 
 export default function CreateTaskDialog() {
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    kpi_id: "no_kpi",
-    assignTo: "",
-    priority: "medium",
-    deadline: "",
-    isRecurring: false,
-    recurringFrequency: "",
-  });
+  const [form, setForm] = useState({ ...initialState });
   const [open, setOpen] = useState(false);
-  const { data: kpis = [], isLoading: kpiLoading } = useKpi();
+  const { data: kpis = [], isLoading: kpiLoading } = useGetKpis();
   const { data: users = [], isLoading: usersLoading } = useUsers();
   const { mutate: createTask, isPending } = useCreateTask();
 
@@ -58,25 +64,16 @@ export default function CreateTaskDialog() {
 
   const handleSubmit = () => {
     try {
-      // ✅ Zod Validation
       const validated = CreateTaskSchema.parse(form);
       createTask(validated, {
         onSettled: () => {
-          setForm({
-            title: "",
-            description: "",
-            kpi_id: "no_kpi",
-            assignTo: "",
-            priority: "medium",
-            deadline: "",
-            isRecurring: false,
-            recurringFrequency: "daily",
-          });
+          setForm({ ...initialState });
           setOpen(false);
         },
       });
     } catch (err) {
       if (err instanceof z.ZodError) {
+        console.log(err);
         toast.error(err.issues[0].message);
       } else {
         toast.error("Unexpected error");
@@ -123,8 +120,8 @@ export default function CreateTaskDialog() {
           <div>
             <Label className="text-sm font-medium mb-1">KPI (Optional)</Label>
             <Select
-              value={form.kpi_id}
-              onValueChange={(val) => handleChange("kpi_id", val)}
+              value={form.kpiId}
+              onValueChange={(val) => handleChange("kpiId", val)}
               disabled={kpiLoading}
             >
               <SelectTrigger>
@@ -149,8 +146,8 @@ export default function CreateTaskDialog() {
             <div>
               <Label className="text-sm font-medium mb-1">Assign To</Label>
               <Select
-                value={form.assignTo}
-                onValueChange={(val) => handleChange("assignTo", val)}
+                value={form.assignedUserId}
+                onValueChange={(val) => handleChange("assignedUserId", val)}
                 disabled={usersLoading}
               >
                 <SelectTrigger>
@@ -176,9 +173,11 @@ export default function CreateTaskDialog() {
                   <SelectValue placeholder="Medium" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
+                  {Object.values(TaskPriorityEnum).map((frequency) => (
+                    <SelectItem key={frequency} value={frequency}>
+                      {frequency}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -234,8 +233,11 @@ export default function CreateTaskDialog() {
                   <SelectValue placeholder="Select Frquency" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="daily">Daily</SelectItem>
-                  <SelectItem value="weekly">Weekly</SelectItem>
+                  {Object.values(RecurringFrequencyEnum).map((priority) => (
+                    <SelectItem key={priority} value={priority}>
+                      {priority}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

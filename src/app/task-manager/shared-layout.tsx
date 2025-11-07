@@ -10,7 +10,6 @@ export default function TaskManagerLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
     <div>
       <div className="border-b">
