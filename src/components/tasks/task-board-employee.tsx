@@ -27,7 +27,7 @@ export const TaskBoardEmployee = () => {
           <p className="text-gray-600">Manage and track your tasks easily</p>
         </div>
         <div className="flex gap-2">
-          <CreateKpiDialog/>
+          <CreateKpiDialog />
           <CreateTaskDialog />
         </div>
       </div>

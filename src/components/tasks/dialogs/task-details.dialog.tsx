@@ -93,8 +93,8 @@ export const TaskDetailsModal = ({ task, onClose }: any) => {
         {task.status === TaskStatusEnum.COMPLETED ? (
           <div>
             <div className="flex items-center text-sm text-green-700 mb-2 font-semibold">
-            <Clock className="mr-2 w-5 h-5" />
-            Completed on {formatDateString(task.completionDate)}
+              <Clock className="mr-2 w-5 h-5" />
+              Completed on {formatDateString(task.completionDate)}
             </div>
             <div className="space-y-2 bg-green-50 p-3 rounded-md">
               {task.proofOfCompletion && (

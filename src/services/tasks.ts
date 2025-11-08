@@ -13,20 +13,15 @@ export async function createTask(data: CreateTaskDTO) {
 }
 
 export async function getTasks(filters?: TaskFilterDTO) {
-  const query = filters
-    ? "?" +
-      new URLSearchParams(
-        Object.entries(filters).reduce(
-          (acc, [key, val]) => {
-            if (val !== undefined && val !== null) {
-              acc[key] = val instanceof Date ? val.toISOString() : String(val);
-            }
-            return acc;
-          },
-          {} as Record<string, string>,
-        ),
-      ).toString()
-    : "";
+  let query = "";
+
+  if (filters && Object.keys(filters).length > 0) {
+    const queryParts = Object.entries(filters)
+      .filter(([_, val]) => val !== undefined && val !== null)
+      .map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(val))}`);
+
+    query = "?" + queryParts.join("&");
+  }
 
   console.log("Generated Query:", query);
 

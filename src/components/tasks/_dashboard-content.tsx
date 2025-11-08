@@ -19,27 +19,20 @@ import { useGetTasks } from "@/lib/hooks/tasks/use-gettask.";
 
 const TaskDashboardPage = () => {
   const [filters, setFilters] = useState<TaskFilterDTO>({});
-  const {
-    data: tasks = [],
-    isLoading,
-    isError,
-  } = useGetTasks(filters);
+  const { data: tasks = [], isLoading, isError } = useGetTasks(filters);
 
   const { tasksCompleted, tasksPending, tasksOverdue } = useMemo(() => {
     if (!tasks || !Array.isArray(tasks)) {
       return { tasksCompleted: [], tasksPending: [], tasksOverdue: [] };
     }
 
-
     const completed = tasks.filter(
-      (t) => t.status === TaskStatusEnum.COMPLETED
+      (t) => t.status === TaskStatusEnum.COMPLETED,
     );
     const pending = tasks.filter(
-      (t) => t.status === TaskStatusEnum.IN_PROGRESS 
+      (t) => t.status === TaskStatusEnum.IN_PROGRESS,
     );
-    const overdue = tasks.filter(
-      (t) => t.status === TaskStatusEnum.OVERDUE
-    );
+    const overdue = tasks.filter((t) => t.status === TaskStatusEnum.OVERDUE);
 
     return {
       tasksCompleted: completed,
@@ -114,7 +107,9 @@ const TaskDashboardPage = () => {
               title="Productivity Score"
               count={
                 tasks.length > 0
-                  ? Number(((tasksCompleted.length / tasks.length) * 100).toFixed(1))
+                  ? Number(
+                      ((tasksCompleted.length / tasks.length) * 100).toFixed(1),
+                    )
                   : 0
               }
               icon={<TrendingUp size={18} />}
@@ -126,7 +121,7 @@ const TaskDashboardPage = () => {
           {/* Other components */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TeamLeaderBoard />
-            <OverdueTasks tasksOverdue={tasksOverdue}/>
+            <OverdueTasks tasksOverdue={tasksOverdue} />
           </div>
         </>
       )}

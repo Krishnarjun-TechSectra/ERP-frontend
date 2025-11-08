@@ -16,7 +16,7 @@ const TaskBoardAdmin = () => {
         <p className="text-gray-600">
           Overview of team performance and individual task boards
         </p>
-      </div>  
+      </div>
 
       <TeamLeaderBoard />
 
