@@ -42,7 +42,7 @@ export default function KpiScoreManager() {
       { id, data: { kpiScore: Number(score) } },
       {
         onSettled: () => setActiveUserId(null),
-      }
+      },
     );
   };
 

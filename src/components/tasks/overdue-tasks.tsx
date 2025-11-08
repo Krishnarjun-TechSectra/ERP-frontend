@@ -1,11 +1,10 @@
 import React from "react";
 import { useGetOverdueTasks } from "@/lib/hooks/tasks/use-get-overduetasks";
 import OverdueTaskCard from "./cards/overdue-task.card";
+import { TaskSchemaType } from "@erp/shared-schema";
+import NoDataFound from "../ui/no-data-found-card";
 
-const OverdueTasks = () => {
-  const { data: tasksOverdue = [], isLoading: kpiLoading } =
-    useGetOverdueTasks();
-
+const OverdueTasks = ({ tasksOverdue }: { tasksOverdue: any[] }) => {
   return (
     <div className="rounded-xl border border-gray-200 p-4 md:p-6">
       {/* Header */}
@@ -18,10 +17,13 @@ const OverdueTasks = () => {
 
       {/* Scrollable Cards Section */}
       <div className="space-y-4 max-h-[400px] overflow-y-auto scrollbar-overlay">
-        {tasksOverdue?.length !== 0 &&
-          tasksOverdue?.map((task: any) => (
+        {tasksOverdue && tasksOverdue.length > 0 ? (
+          tasksOverdue.map((task: any) => (
             <OverdueTaskCard key={task.id} task={task} />
-          ))}
+          ))
+        ) : (
+          <NoDataFound />
+        )}
       </div>
     </div>
   );

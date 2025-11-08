@@ -15,6 +15,11 @@ import { Label } from "@radix-ui/react-label";
 import { useAuth } from "../../../context/auth-context";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../ui/input-group";
 
 interface SignUpFormProps {
   onToggleToSignIn: () => void;
@@ -52,54 +57,58 @@ export default function SignUpForm({ onToggleToSignIn }: SignUpFormProps) {
 
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name Field */}
+            {/* Full Name */}
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-3 w-5 h-5 text-muted-foreground pointer-events-none" />
-                <Input
+              <InputGroup>
+                <InputGroupAddon align="inline-start">
+                  <User />
+                </InputGroupAddon>
+                <InputGroupInput
                   id="name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
-                  className="pl-10"
                 />
-              </div>
+              </InputGroup>
             </div>
 
-            {/* Email Field */}
+            {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 w-5 h-5 text-muted-foreground pointer-events-none" />
-                <Input
+              <InputGroup>
+                <InputGroupAddon align="inline-start">
+                  <Mail />
+                </InputGroupAddon>
+                <InputGroupInput
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="pl-10"
                 />
-              </div>
+              </InputGroup>
             </div>
 
-            {/* Password Field */}
+            {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 w-5 h-5 text-muted-foreground pointer-events-none" />
-                <Input
+              <InputGroup>
+                <InputGroupAddon align="inline-start">
+                  <Lock />
+                </InputGroupAddon>
+                <InputGroupInput
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="pl-10"
+                  placeholder="Enter your password"
                 />
-              </div>
+              </InputGroup>
             </div>
 
+            {/* Admin Role */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <input
@@ -138,7 +147,6 @@ export default function SignUpForm({ onToggleToSignIn }: SignUpFormProps) {
               )}
             </Button>
           </form>
-
           {/* Toggle to Sign In */}
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">

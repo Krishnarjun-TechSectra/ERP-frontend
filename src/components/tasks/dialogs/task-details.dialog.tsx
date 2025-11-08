@@ -13,7 +13,15 @@ import {
   TaskStatusBgColorMap,
 } from "@/lib/utils/task-status-color";
 import { TaskPriorityEnum, TaskStatusEnum } from "@erp/shared-schema";
-import { Calendar, User, Check, FileText, Layers, Loader2 } from "lucide-react";
+import {
+  Calendar,
+  User,
+  Check,
+  FileText,
+  Layers,
+  Loader2,
+  Clock,
+} from "lucide-react";
 import { useState } from "react";
 
 export const TaskDetailsModal = ({ task, onClose }: any) => {
@@ -83,17 +91,23 @@ export const TaskDetailsModal = ({ task, onClose }: any) => {
 
         {/* Completed Section */}
         {task.status === TaskStatusEnum.COMPLETED ? (
-          <div className="space-y-2 bg-green-50 p-3 rounded-md">
-            {task.proofOfCompletion && (
-              <div className="mt-2">
-                <div className="flex items-center gap-1 font-semibold text-green-700">
-                  <FileText size={16} /> Proof of Completion
+          <div>
+            <div className="flex items-center text-sm text-green-700 mb-2 font-semibold">
+            <Clock className="mr-2 w-5 h-5" />
+            Completed on {formatDateString(task.completionDate)}
+            </div>
+            <div className="space-y-2 bg-green-50 p-3 rounded-md">
+              {task.proofOfCompletion && (
+                <div className="mt-2">
+                  <div className="flex items-center gap-1 font-semibold text-green-700">
+                    <FileText size={16} /> Proof of Completion
+                  </div>
+                  <p className="text-green-700 text-sm mt-1">
+                    {task.proofOfCompletion}
+                  </p>
                 </div>
-                <p className="text-green-700 text-sm mt-1">
-                  {task.proofOfCompletion}
-                </p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         ) : (
           // Mark as Complete

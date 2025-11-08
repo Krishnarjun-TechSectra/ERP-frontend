@@ -20,7 +20,7 @@ export default function KanbanBoard({
   isLoading: boolean;
 }) {
   const [proofModalTask, setProofModalTask] = useState<TaskSchemaType | null>(
-    null
+    null,
   );
   const [selectedTask, setSelectedTask] = useState<TaskSchemaType | null>(null);
 

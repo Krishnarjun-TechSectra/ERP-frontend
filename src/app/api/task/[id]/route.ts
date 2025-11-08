@@ -10,7 +10,10 @@ export async function GET(_req: NextRequest, context: unknown) {
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     console.error("Error fetching Task:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -27,12 +30,15 @@ export async function PATCH(req: NextRequest, context: unknown) {
     if (error.name === "ZodError") {
       return NextResponse.json(
         { error: "Validation failed", details: error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error("Error updating Task:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -44,6 +50,9 @@ export async function DELETE(_req: NextRequest, context: unknown) {
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     console.error("Error deleting Task:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

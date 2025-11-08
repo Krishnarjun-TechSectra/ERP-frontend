@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState } from "react";
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight, EyeOff, Eye } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -14,6 +14,12 @@ import { Label } from "@radix-ui/react-label";
 import { useAuth } from "../../../context/auth-context";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "../ui/input-group";
 
 interface SignInFormProps {
   onToggleToSignUp: () => void;
@@ -24,6 +30,7 @@ export default function SignInForm({ onToggleToSignUp }: SignInFormProps) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,38 +54,50 @@ export default function SignInForm({ onToggleToSignUp }: SignInFormProps) {
             {/* Email Field */}
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 w-5 h-5 text-muted-foreground pointer-events-none" />
-                <Input
+              <InputGroup>
+                <InputGroupAddon align={"inline-start"}>
+                  <Mail />
+                </InputGroupAddon>
+                <InputGroupInput
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="pl-10"
                 />
-              </div>
+              </InputGroup>
             </div>
 
             {/* Password Field */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <a href="#" className="text-sm text-primary hover:underline">
-                  Forgot?
-                </a>
-              </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 w-5 h-5 text-muted-foreground pointer-events-none" />
-                <Input
+              <Label htmlFor="password">Password</Label>
+              <InputGroup>
+                <InputGroupAddon align={"inline-start"}>
+                  <Lock />
+                </InputGroupAddon>
+                <InputGroupInput
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="pl-10"
+                  placeholder="Enter your Password"
+                  required
                 />
-              </div>
+                <InputGroupAddon align="inline-end">
+                  <InputGroupButton
+                    aria-label="Toggle password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    size="icon-xs"
+                    variant="ghost"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </InputGroupButton>
+                </InputGroupAddon>
+              </InputGroup>
             </div>
 
             {/* Submit Button */}

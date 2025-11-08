@@ -3,7 +3,6 @@ import { TaskStatusEnum } from "@erp/shared-schema";
 import { TaskStatusBgColorMap } from "@/lib/utils/task-status-color";
 import { TaskCard } from "./task-card";
 
-
 interface ColumnProps {
   id: string;
   tasks: any[];
