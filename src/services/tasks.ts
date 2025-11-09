@@ -18,7 +18,10 @@ export async function getTasks(filters?: TaskFilterDTO) {
   if (filters && Object.keys(filters).length > 0) {
     const queryParts = Object.entries(filters)
       .filter(([_, val]) => val !== undefined && val !== null)
-      .map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(val))}`);
+      .map(
+        ([key, val]) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(String(val))}`,
+      );
 
     query = "?" + queryParts.join("&");
   }
