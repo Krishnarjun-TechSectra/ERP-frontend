@@ -14,7 +14,7 @@ export async function createTask(data: CreateTaskDTO) {
 
 export async function getTasks(filters?: TaskFilterDTO) {
   let query = "";
-  console.log(filters)
+  console.log(filters);
 
   if (filters && Object.keys(filters).length > 0) {
     const queryParts = Object.entries(filters)

@@ -36,7 +36,10 @@ const TaskManagerNavbar = () => {
   return (
     <nav className="flex justify-between items-center gap-4 py-4">
       <section className="flex space-x-4">
-        <h2 className="font-bold text-2xl">Task Manager</h2>
+        <div className="flex items-center gap-2">
+          <img src={"/logo.png"} className="h-10" />
+          <h2 className="font-bold text-2xl">Task Manager</h2>
+        </div>
 
         <Button
           asChild
