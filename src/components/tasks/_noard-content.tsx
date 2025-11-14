@@ -10,8 +10,18 @@ const TaskBoardPage = () => {
   const searchParams = useSearchParams();
   const currentIsAdmin = searchParams.get("isAdminView") === "true";
 
-  if (currentIsAdmin) return <TaskManagerLayout><TaskBoardAdmin /></TaskManagerLayout>;
-  else return <TaskManagerLayout><TaskBoardEmployee /></TaskManagerLayout>;
+  if (currentIsAdmin)
+    return (
+      <TaskManagerLayout>
+        <TaskBoardAdmin />
+      </TaskManagerLayout>
+    );
+  else
+    return (
+      <TaskManagerLayout>
+        <TaskBoardEmployee />
+      </TaskManagerLayout>
+    );
 };
 
 export default TaskBoardPage;

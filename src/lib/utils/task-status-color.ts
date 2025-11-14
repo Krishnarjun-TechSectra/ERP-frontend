@@ -8,7 +8,7 @@ export const TaskPriorityBgColorMap: Record<TaskPriorityEnum, string> = {
 };
 
 export const TaskStatusBgColorMap: Record<TaskStatusEnum, string> = {
-  [TaskStatusEnum.TODO]: "bg-gray-1000 text-gray-800",
+  [TaskStatusEnum.TODO]: "bg-gray-100 text-gray-800",
   [TaskStatusEnum.IN_PROGRESS]: "bg-sky-100 text-sky-800",
   [TaskStatusEnum.COMPLETED]: "bg-green-100 text-green-800",
   [TaskStatusEnum.OVERDUE]: "bg-red-100 text-red-800",
