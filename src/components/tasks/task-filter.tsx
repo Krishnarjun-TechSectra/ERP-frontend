@@ -51,9 +51,12 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
   const { data: users = [], isLoading: usersLoading } = useUsers();
 
   const handleDateChange = (selectedDate?: Date) => {
+    console.log("selected Date", selectedDate);
     const updated: TaskFilterDTO = {
       ...filters,
-      selectedDate: selectedDate ? selectedDate.toISOString() : undefined,
+      selectedDate: selectedDate
+        ? selectedDate.toLocaleDateString("sv-SE")
+        : undefined,
     };
     setFilters(updated);
     onFilterChange(updated);
@@ -223,7 +226,7 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
                       const normalized = new Date(
                         date.getFullYear(),
                         date.getMonth(),
-                        1,
+                        1
                       );
                       handleDateChange(normalized);
                     } else {
