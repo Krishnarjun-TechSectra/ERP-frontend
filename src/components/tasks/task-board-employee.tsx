@@ -1,22 +1,47 @@
 import TaskFilter from "./task-filter";
-import { TaskFilterDtoType } from "@erp/shared-schema/";
+import { TaskFilterDtoType, ViewTypeEnum } from "@erp/shared-schema/";
 import { useGetTasks } from "@/lib/hooks/tasks/use-gettask.";
-import { useState } from "react";
-import TaskManagerLayout from "@/app/task-manager/shared-layout";
-import { Button } from "../ui/button";
-import { RotateCcw } from "lucide-react";
+import { useEffect, useState } from "react";
 import CreateTaskDialog from "./dialogs/create-task-dialog";
 import KanbanBoard from "./task-status-dnd";
 import CreateKpiDialog from "./dialogs/create-kpi-dialog";
+import { useAuth } from "../../../context/auth-context";
 
 export const TaskBoardEmployee = () => {
-  const [filters, setFilters] = useState<TaskFilterDtoType>({});
-  const { data: tasks, isLoading, isError, refetch } = useGetTasks(filters);
+  const { user } = useAuth();
+
+  // 🚀 filters will be set only after user is loaded
+  const [filters, setFilters] = useState<TaskFilterDtoType | null>(null);
+
+  // 🛡 prevents multiple re-renders due to user reloads
+  const [initialized, setInitialized] = useState(false);
+
+  // ========== Initialize Filters WHEN user loads ==========
+  useEffect(() => {
+    if (!user || initialized) return;
+
+    const isAdmin = user.user_metadata.role === "Admin";
+
+    const defaultFilters: TaskFilterDtoType = {
+      viewType: ViewTypeEnum.DAILY,
+      selectedDate: new Date().toLocaleDateString("sv-SE"), // yyyy-mm-dd
+      assignedUserId: isAdmin ? user.id : user.id, // admin sees own tasks by default
+    };
+
+    setFilters(defaultFilters);
+    setInitialized(true);
+  }, [user, initialized]);
+
+  const { data: tasks, isLoading, isError } = useGetTasks(filters ?? {});
 
   const handleFilterChange = (newFilters: TaskFilterDtoType) => {
     setFilters(newFilters);
-    // optional: push filters to URL or trigger API calls
   };
+
+  // ⏳ Wait for user + filters to initialize
+  if (!user || !filters) return <div>Loading task board...</div>;
+
+  console.log(user);
 
   return (
     <>
@@ -32,9 +57,10 @@ export const TaskBoardEmployee = () => {
         </div>
       </div>
 
-      {/* ✅ Modular Filter */}
+      {/* Filter */}
       <TaskFilter
         showDate
+        showUser={user.user_metadata.role === "admin"} // admin only
         onFilterChange={handleFilterChange}
         initialFilters={filters}
       />

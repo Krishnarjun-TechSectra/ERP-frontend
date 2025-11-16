@@ -117,7 +117,10 @@ export default function KanbanBoard({
             ))}
           </div>
         ) : (
-          <NoDataFound />
+          <NoDataFound
+            shortText="No Task Found!"
+            longText="We did't find any Task"
+          />
         )}
       </DndContext>
 

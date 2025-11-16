@@ -20,7 +20,10 @@ const OverdueTasks = ({ tasksOverdue }: { tasksOverdue: any[] }) => {
             <OverdueTaskCard key={task.id} task={task} />
           ))
         ) : (
-          <NoDataFound />
+          <NoDataFound
+            shortText="No Overdue Task!"
+            longText="There is no overdue task"
+          />
         )}
       </div>
     </div>
