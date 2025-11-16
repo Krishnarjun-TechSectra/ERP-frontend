@@ -36,7 +36,6 @@ const TaskBoardAdmin = () => {
   );
 };
 
-// ✅ Protect this component — only "admin" role can view
 export default withRoleProtection(TaskBoardAdmin, {
-  allowedRoles: ["admin"],
+  allowedRoles: ["admin", "developer"],
 });

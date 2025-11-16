@@ -59,10 +59,10 @@ const TaskDashboardPage = () => {
 
     return {
       tasksCompleted: tasks.filter(
-        (t) => t.status === TaskStatusEnum.COMPLETED
+        (t) => t.status === TaskStatusEnum.COMPLETED,
       ),
       tasksPending: tasks.filter(
-        (t) => t.status === TaskStatusEnum.IN_PROGRESS
+        (t) => t.status === TaskStatusEnum.IN_PROGRESS,
       ),
       tasksOverdue: tasks.filter((t) => t.status === TaskStatusEnum.OVERDUE),
     };
@@ -139,7 +139,7 @@ const TaskDashboardPage = () => {
               count={
                 tasks.length > 0
                   ? Number(
-                      ((tasksCompleted.length / tasks.length) * 100).toFixed(1)
+                      ((tasksCompleted.length / tasks.length) * 100).toFixed(1),
                     )
                   : 0
               }

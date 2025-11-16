@@ -44,7 +44,6 @@ const TaskManagerNavbar = () => {
     );
   }
 
-
   return (
     <nav className="flex justify-between items-center gap-4 py-4">
       <section className="flex space-x-4">
@@ -55,7 +54,9 @@ const TaskManagerNavbar = () => {
 
         <Button
           asChild
-          variant={pathname === "/task-manager/dashboard" ? "default" : "secondary"}
+          variant={
+            pathname === "/task-manager/dashboard" ? "default" : "secondary"
+          }
         >
           <Link href="/task-manager/dashboard">
             <span className="flex items-center gap-2">

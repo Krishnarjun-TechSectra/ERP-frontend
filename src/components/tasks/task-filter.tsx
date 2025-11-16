@@ -225,7 +225,7 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
                       const normalized = new Date(
                         date.getFullYear(),
                         date.getMonth(),
-                        1
+                        1,
                       );
                       handleDateChange(normalized);
                     } else {
