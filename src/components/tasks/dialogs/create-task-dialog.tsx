@@ -85,7 +85,7 @@ export default function CreateTaskDialog() {
 
   const handleChange = <K extends keyof CreateTaskDtoType>(
     key: K,
-    value: CreateTaskDtoType[K]
+    value: CreateTaskDtoType[K],
   ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
@@ -152,7 +152,7 @@ export default function CreateTaskDialog() {
     // Quick FE pre-check for KPI: your backend requires a UUID. If empty => show helpful toast.
     if (!form.kpiId) {
       toast.error(
-        "Please select a KPI or update the backend schema if KPI should be optional."
+        "Please select a KPI or update the backend schema if KPI should be optional.",
       );
       return;
     }
@@ -347,7 +347,7 @@ export default function CreateTaskDialog() {
                   onValueChange={(val) =>
                     handleChange(
                       "recurringFrequency",
-                      val === "" ? null : (val as RecurringFrequencyEnum)
+                      val === "" ? null : (val as RecurringFrequencyEnum),
                     )
                   }
                 >
@@ -411,7 +411,7 @@ export default function CreateTaskDialog() {
                       .filter((day) => day !== WeekdayEnum.SUN)
                       .map((day) => {
                         const checked = (form.recurringWeekDays ?? []).includes(
-                          day as WeekdayEnum
+                          day as WeekdayEnum,
                         );
                         return (
                           <div
@@ -423,7 +423,7 @@ export default function CreateTaskDialog() {
                               onCheckedChange={(isChecked) =>
                                 handleWeekdayToggle(
                                   day as WeekdayEnum,
-                                  !!isChecked
+                                  !!isChecked,
                                 )
                               }
                             />

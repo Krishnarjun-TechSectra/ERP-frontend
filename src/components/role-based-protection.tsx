@@ -23,7 +23,6 @@ export function withRoleProtection<P extends object>(
     const router = useRouter();
     const { user, loading } = useAuth();
 
-
     if (loading) {
       // Still verifying auth status
       return <div className="text-center mt-8">Checking permissions...</div>;

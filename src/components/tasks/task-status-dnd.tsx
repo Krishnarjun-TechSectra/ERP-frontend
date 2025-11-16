@@ -19,9 +19,7 @@ export default function KanbanBoard({
   isError: boolean;
   isLoading: boolean;
 }) {
-  const [proofModalTask, setProofModalTask] = useState<any | null>(
-    null,
-  );
+  const [proofModalTask, setProofModalTask] = useState<any | null>(null);
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
 
   const {

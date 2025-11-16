@@ -50,7 +50,6 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
 
   const { data: users = [], isLoading: usersLoading } = useUsers();
 
-
   const handleDateChange = (selectedDate?: Date) => {
     const updated: TaskFilterDtoType = {
       ...filters,
@@ -62,7 +61,6 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
     onFilterChange(updated);
     setCalendarOpen(false);
   };
-
 
   const handleViewTypeChange = (viewType: ViewTypeEnum | string) => {
     if (!viewType || viewType === "") return;

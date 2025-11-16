@@ -14,10 +14,7 @@ import TeamLeaderBoard from "@/components/tasks/team-leaderboard";
 import OverdueTasks from "@/components/tasks/overdue-tasks";
 import TaskFilter from "./task-filter";
 
-import {
-  TaskFilterDtoType,
-  TaskStatusEnum,
-} from "@erp/shared-schema";
+import { TaskFilterDtoType, TaskStatusEnum } from "@erp/shared-schema";
 import { useGetTasks } from "@/lib/hooks/tasks/use-gettask.";
 
 const TaskDashboardPage = () => {
@@ -30,10 +27,10 @@ const TaskDashboardPage = () => {
     }
 
     const completed = tasks.filter(
-      (t) => t.status === TaskStatusEnum.COMPLETED
+      (t) => t.status === TaskStatusEnum.COMPLETED,
     );
     const pending = tasks.filter(
-      (t) => t.status === TaskStatusEnum.IN_PROGRESS
+      (t) => t.status === TaskStatusEnum.IN_PROGRESS,
     );
     const overdue = tasks.filter((t) => t.status === TaskStatusEnum.OVERDUE);
 
@@ -111,7 +108,7 @@ const TaskDashboardPage = () => {
               count={
                 tasks.length > 0
                   ? Number(
-                      ((tasksCompleted.length / tasks.length) * 100).toFixed(1)
+                      ((tasksCompleted.length / tasks.length) * 100).toFixed(1),
                     )
                   : 0
               }

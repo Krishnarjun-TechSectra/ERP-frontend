@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getKpis } from "@/services/kpi";
-import {type KpiType} from "@erp/shared-schema";
+import { type KpiType } from "@erp/shared-schema";
 
 export function useGetKpis() {
   return useQuery<KpiType[], Error>({

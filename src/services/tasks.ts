@@ -23,7 +23,7 @@ export async function getTasks(filters?: TaskFilterDtoType) {
       .filter(([_, val]) => val !== undefined && val !== null)
       .map(
         ([key, val]) =>
-          `${encodeURIComponent(key)}=${encodeURIComponent(String(val))}`
+          `${encodeURIComponent(key)}=${encodeURIComponent(String(val))}`,
       );
 
     query = "?" + queryParts.join("&");

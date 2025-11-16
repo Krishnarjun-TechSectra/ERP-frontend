@@ -1,7 +1,7 @@
 import { updateTask } from "@/services/tasks";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { UpdateTaskDtoType} from "@erp/shared-schema";
+import { UpdateTaskDtoType } from "@erp/shared-schema";
 
 export function useUpdateTask() {
   const queryClient = useQueryClient();
