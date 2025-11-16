@@ -35,6 +35,7 @@ export const TaskDetailsModal = ({ task, onClose }: any) => {
       data: {
         proofOfCompletion: proofOfCompletion,
         status: TaskStatusEnum.COMPLETED,
+        completionDate: new Date(),
       },
     });
   };

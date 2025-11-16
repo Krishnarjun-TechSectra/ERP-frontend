@@ -27,7 +27,6 @@ export default function KanbanBoard({
     isError: isUpdateError,
     isPending: isUpdatePending,
   } = useUpdateTask();
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
@@ -38,16 +37,16 @@ export default function KanbanBoard({
     const fromStatus = activeTask.status;
     const toStatus = over.id as TaskStatusEnum;
 
-    // 🚫 If dropped in the same column, do nothing
+    // 🚫 Same column
     if (fromStatus === toStatus) return;
 
-    // ✅ If moved *to* COMPLETED — open proof modal instead of updating immediately
+    // ✅ Moving INTO COMPLETED → open modal instead of API update
     if (toStatus === TaskStatusEnum.COMPLETED) {
       setProofModalTask({ ...activeTask, status: toStatus });
       return;
     }
 
-    // ✅ If moved *from* COMPLETED to another column — remove proof
+    // ✅ Moving OUT OF COMPLETED → remove proof + remove completionDate
     if (
       fromStatus === TaskStatusEnum.COMPLETED &&
       (toStatus as TaskStatusEnum) !== TaskStatusEnum.COMPLETED
@@ -56,16 +55,19 @@ export default function KanbanBoard({
         id: activeTask.id,
         data: {
           status: toStatus,
-          proofOfCompletion: null, // remove proof when leaving completed
+          proofOfCompletion: null,
+          completionDate: null, // ⬅ REMOVE completion date
         },
       });
       return;
     }
 
-    // 🔵 For all other moves (normal status change)
+    // 🔵 Normal status change
     updateTask({
       id: activeTask.id,
-      data: { status: toStatus },
+      data: {
+        status: toStatus,
+      },
     });
   };
 
@@ -75,9 +77,11 @@ export default function KanbanBoard({
       id: task.id,
       data: {
         status: TaskStatusEnum.COMPLETED,
-        proofOfCompletion: proofText, // store entered proof
+        proofOfCompletion: proofText,
+        completionDate: new Date(), // ⬅ ADD completion date
       },
     });
+
     setProofModalTask(null);
   };
 
