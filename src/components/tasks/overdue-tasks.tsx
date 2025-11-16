@@ -1,7 +1,5 @@
 import React from "react";
-import { useGetOverdueTasks } from "@/lib/hooks/tasks/use-get-overduetasks";
 import OverdueTaskCard from "./cards/overdue-task.card";
-import { TaskSchemaType } from "@erp/shared-schema";
 import NoDataFound from "../ui/no-data-found-card";
 
 const OverdueTasks = ({ tasksOverdue }: { tasksOverdue: any[] }) => {

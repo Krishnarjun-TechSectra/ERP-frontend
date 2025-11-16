@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Plus } from "lucide-react";
 import clsx from "clsx";
 import { useCreateKpi } from "@/lib/hooks/kpi/use-createkpi";
-import { CreateKpiSchema } from "@erp/shared-schema";
+import { CreateKpiDto } from "@erp/shared-schema";
 import { toast } from "react-toastify";
 
 export default function CreateKpiDialog() {
@@ -36,7 +36,7 @@ export default function CreateKpiDialog() {
   ];
 
   const handleSubmit = async () => {
-    const result = CreateKpiSchema.safeParse({
+    const result = CreateKpiDto.safeParse({
       title,
       description,
       colorCode: selectedColor,

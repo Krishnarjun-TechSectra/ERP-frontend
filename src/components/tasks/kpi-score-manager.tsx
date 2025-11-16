@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { User2Icon, Loader2 } from "lucide-react";
 import { useUsers } from "@/lib/hooks/users/use-user";
 import { useUpdateUser } from "@/lib/hooks/users/use-update-user";
-import { UpdateUserSchema } from "@erp/shared-schema";
+import { UpdateUserDto } from "@erp/shared-schema";
 import { toast } from "react-toastify";
 
 export default function KpiScoreManager() {
@@ -17,8 +17,6 @@ export default function KpiScoreManager() {
   const { data: users = [], isLoading: usersLoading } = useUsers();
   const { mutate: updateUser } = useUpdateUser();
 
-  console.log(users);
-
   const handleChange = (id: string, value: string) => {
     setScores((prev) => ({ ...prev, [id]: value }));
   };
@@ -27,8 +25,7 @@ export default function KpiScoreManager() {
     const score = scores[id];
     if (score === undefined || score === "") return;
 
-    const parsed = UpdateUserSchema.safeParse({
-      id,
+    const parsed = UpdateUserDto.safeParse({
       kpiScore: Number(score),
     });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -35,46 +35,153 @@ import z from "zod";
 import { toast } from "react-toastify";
 import { useCreateTask } from "@/lib/hooks/tasks/use-createtask";
 import {
+  CreateTaskDtoType,
   CreateTaskSchema,
   TaskPriorityEnum,
+  TaskStatusEnum,
   RecurringFrequencyEnum,
+  WeekdayEnum,
 } from "@erp/shared-schema";
 
-const initialState = {
+/**
+ * NOTE:
+ * - Backend expects kpiId: string().uuid() (non-optional). If you want KPI to be optional,
+ *   change backend to make kpiId nullable/optional and then update FE accordingly.
+ */
+
+/* ------------------------- Initial state that matches CreateTaskDtoType ------------------------- */
+const getInitialState = (): CreateTaskDtoType => ({
   title: "",
   description: "",
-  kpiId: "",
   assignedUserId: "",
+  kpiId: "", // must be a UUID before submit (backend requires this). See NOTE above.
   priority: TaskPriorityEnum.MEDIUM,
-  deadline: "",
   isRecurring: false,
-  recurringFrequency: undefined,
-};
+  recurringFrequency: null,
+  recurringEndDate: null,
+  recurringWeekDays: null,
+  deadline: undefined,
+  status: TaskStatusEnum.TODO,
+  completionDate: null,
+  proofOfCompletion: null,
+});
 
 export default function CreateTaskDialog() {
-  const [form, setForm] = useState({ ...initialState });
+  const [form, setForm] = useState<CreateTaskDtoType>(getInitialState());
   const [open, setOpen] = useState(false);
+
   const { data: kpis = [], isLoading: kpiLoading } = useGetKpis();
   const { data: users = [], isLoading: usersLoading } = useUsers();
   const { mutate: createTask, isPending } = useCreateTask();
 
-  const handleChange = (key: string, value: any) => {
+  // Optional: if you want to default kpi to the first KPI automatically uncomment:
+  useEffect(() => {
+    if (kpis && kpis.length > 0 && form.kpiId === "") {
+      // do not auto-set: we avoid forcing a KPI. If you want an auto default uncomment:
+      // setForm(prev => ({ ...prev, kpiId: kpis[0].id }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [kpis]);
+
+  const handleChange = <K extends keyof CreateTaskDtoType>(
+    key: K,
+    value: CreateTaskDtoType[K]
+  ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
+  const handleToggleRecurring = (checked: boolean) => {
+    // When enabling recurring: clear deadline and ensure recurring defaults are set to nulls
+    if (checked) {
+      setForm((prev) => ({
+        ...prev,
+        isRecurring: true,
+        deadline: undefined,
+        recurringFrequency: prev.recurringFrequency ?? null,
+        recurringEndDate: prev.recurringEndDate ?? null,
+        recurringWeekDays: prev.recurringWeekDays ?? null,
+      }));
+    } else {
+      // When disabling recurring: clear all recurring related fields
+      setForm((prev) => ({
+        ...prev,
+        isRecurring: false,
+        recurringFrequency: null,
+        recurringEndDate: null,
+        recurringWeekDays: null,
+      }));
+    }
+  };
+
+  const handleWeekdayToggle = (day: WeekdayEnum, checked: boolean) => {
+    const current = form.recurringWeekDays ?? [];
+    const updated = checked
+      ? Array.from(new Set([...current, day]))
+      : current.filter((d) => d !== day);
+    handleChange("recurringWeekDays", updated.length ? updated : null);
+  };
+
+  const transformForValidation = (raw: CreateTaskDtoType) => {
+    // Convert string ISO dates (if any slipped in) to Date objects for zod.coerce.date()
+    // and keep null/undefined semantics as the schema expects.
+    const transformed: any = { ...raw };
+
+    // recurringEndDate might be Date|null already. If it's a string, convert.
+    if (
+      transformed.recurringEndDate &&
+      typeof transformed.recurringEndDate === "string"
+    ) {
+      transformed.recurringEndDate = new Date(transformed.recurringEndDate);
+    }
+
+    if (transformed.deadline && typeof transformed.deadline === "string") {
+      transformed.deadline = new Date(transformed.deadline);
+    }
+
+    if (
+      transformed.completionDate &&
+      typeof transformed.completionDate === "string"
+    ) {
+      transformed.completionDate = new Date(transformed.completionDate);
+    }
+
+    return transformed as CreateTaskDtoType;
+  };
+
   const handleSubmit = () => {
+    // Quick FE pre-check for KPI: your backend requires a UUID. If empty => show helpful toast.
+    if (!form.kpiId) {
+      toast.error(
+        "Please select a KPI or update the backend schema if KPI should be optional."
+      );
+      return;
+    }
+
+    // Prepare object for zod parsing: convert string dates to Date objects
+    const payload = transformForValidation(form);
+
     try {
-      const validated = CreateTaskSchema.parse(form);
+      // parse with CreateTaskSchema which contains superRefine rules
+      const validated = CreateTaskSchema.parse(payload);
+
+      // If validated, call mutate
       createTask(validated, {
         onSettled: () => {
-          setForm({ ...initialState });
+          setForm(getInitialState());
           setOpen(false);
+        },
+        onError: (err: any) => {
+          // The hook may return structured error. Show generic fallback
+          toast.error(err?.message || "Failed to create task");
         },
       });
     } catch (err) {
       if (err instanceof z.ZodError) {
-        console.log(err);
-        toast.error(err.issues[0].message);
+        // show first issue message for user friendliness
+        const first = err.issues[0];
+        toast.error(first?.message || "Validation Error");
+        // optionally log all
+        // console.error(err.issues);
       } else {
         toast.error("Unexpected error");
       }
@@ -82,7 +189,7 @@ export default function CreateTaskDialog() {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="flex items-center gap-2">
           <Plus />
@@ -96,7 +203,7 @@ export default function CreateTaskDialog() {
         </DialogHeader>
 
         <div className="space-y-4 py-2">
-          {/* Task Title */}
+          {/* Title */}
           <div>
             <Label className="text-sm font-medium mb-1">Task Title</Label>
             <Input
@@ -111,14 +218,14 @@ export default function CreateTaskDialog() {
             <Label className="text-sm font-medium mb-1">Description</Label>
             <Textarea
               placeholder="Describe the task in detail..."
-              value={form.description}
+              value={form.description ?? ""}
               onChange={(e) => handleChange("description", e.target.value)}
             />
           </div>
 
           {/* KPI */}
           <div>
-            <Label className="text-sm font-medium mb-1">KPI (Optional)</Label>
+            <Label className="text-sm font-medium mb-1">KPI (required)</Label>
             <Select
               value={form.kpiId}
               onValueChange={(val) => handleChange("kpiId", val)}
@@ -128,7 +235,7 @@ export default function CreateTaskDialog() {
                 <SelectValue placeholder="Select a KPI" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="no_kpi">No KPI</SelectItem>
+                {/* No 'no_kpi' option because backend requires a UUID */}
                 {kpis?.map((kpi: any) => (
                   <SelectItem key={kpi.id} value={kpi.id}>
                     <div
@@ -143,6 +250,7 @@ export default function CreateTaskDialog() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
+            {/* Assign To */}
             <div>
               <Label className="text-sm font-medium mb-1">Assign To</Label>
               <Select
@@ -163,19 +271,22 @@ export default function CreateTaskDialog() {
               </Select>
             </div>
 
+            {/* Priority */}
             <div>
               <Label className="text-sm font-medium mb-1">Priority</Label>
               <Select
                 value={form.priority}
-                onValueChange={(val) => handleChange("priority", val)}
+                onValueChange={(val) =>
+                  handleChange("priority", val as TaskPriorityEnum)
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Medium" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.values(TaskPriorityEnum).map((frequency) => (
-                    <SelectItem key={frequency} value={frequency}>
-                      {frequency}
+                  {Object.values(TaskPriorityEnum).map((p) => (
+                    <SelectItem key={p} value={p}>
+                      {p}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -183,63 +294,146 @@ export default function CreateTaskDialog() {
             </div>
           </div>
 
-          {/* Deadline */}
-          <div>
-            <Label className="text-sm font-medium mb-1">Deadline</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-gray-600 gap-2"
-                >
-                  <CalendarFold className="w-4 h-4" />
-                  {form.deadline
-                    ? new Date(form.deadline).toDateString()
-                    : "Select Deadline"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align="start" className="p-0">
-                <Calendar
-                  mode="single"
-                  selected={form.deadline ? new Date(form.deadline) : undefined}
-                  onSelect={(date) =>
-                    handleChange("deadline", date?.toISOString() || "")
-                  }
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+          {/* Deadline (only for non-recurring) */}
+          {!form.isRecurring && (
+            <div>
+              <Label className="text-sm font-medium mb-1">Deadline</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-gray-600 gap-2"
+                  >
+                    <CalendarFold className="w-4 h-4" />
+                    {form.deadline
+                      ? new Date(form.deadline).toDateString()
+                      : "Select Deadline"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="p-0">
+                  <Calendar
+                    mode="single"
+                    selected={
+                      form.deadline ? new Date(form.deadline) : undefined
+                    }
+                    onSelect={(date) =>
+                      handleChange("deadline", date ? date : undefined)
+                    }
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
 
-          {/* Recurring */}
+          {/* Recurring toggle */}
           <div className="flex items-center space-x-2 pt-2 border-t">
             <Checkbox
               checked={form.isRecurring}
-              onCheckedChange={(checked) =>
-                handleChange("isRecurring", !!checked)
-              }
+              onCheckedChange={(checked) => handleToggleRecurring(!!checked)}
             />
             <Label className="text-sm">Make this a recurring task</Label>
           </div>
+
+          {/* Recurring options */}
           {form.isRecurring && (
-            <div>
-              <Label className="text-sm font-medium mb-2">
-                Recurring Frequency
-              </Label>
-              <Select
-                value={form.recurringFrequency}
-                onValueChange={(val) => handleChange("recurringFrequency", val)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Frquency" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(RecurringFrequencyEnum).map((priority) => (
-                    <SelectItem key={priority} value={priority}>
-                      {priority}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="space-y-4">
+              {/* Frequency */}
+              <div>
+                <Label className="text-sm font-medium mb-2">
+                  Recurring Frequency
+                </Label>
+                <Select
+                  value={form.recurringFrequency ?? ""}
+                  onValueChange={(val) =>
+                    handleChange(
+                      "recurringFrequency",
+                      val === "" ? null : (val as RecurringFrequencyEnum)
+                    )
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Frequency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.values(RecurringFrequencyEnum).map((f) => (
+                      <SelectItem key={f} value={f}>
+                        {f}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Recurring End Date */}
+              <div>
+                <Label className="text-sm font-medium mb-2">
+                  Recurring End Date
+                </Label>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-gray-600 gap-2"
+                    >
+                      <CalendarFold className="w-4 h-4" />
+                      {form.recurringEndDate
+                        ? new Date(form.recurringEndDate).toDateString()
+                        : "Select End Date"}
+                    </Button>
+                  </PopoverTrigger>
+
+                  <PopoverContent align="start" className="p-0">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        form.recurringEndDate
+                          ? new Date(form.recurringEndDate)
+                          : undefined
+                      }
+                      onSelect={(date) =>
+                        handleChange("recurringEndDate", date ? date : null)
+                      }
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Weekly - weekdays multi-select */}
+              {form.recurringFrequency === RecurringFrequencyEnum.WEEKLY && (
+                <div>
+                  <Label className="text-sm font-medium mb-2">
+                    Select Weekdays
+                  </Label>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    {Object.values(WeekdayEnum)
+                      .filter((day) => day !== WeekdayEnum.SUN)
+                      .map((day) => {
+                        const checked = (form.recurringWeekDays ?? []).includes(
+                          day as WeekdayEnum
+                        );
+                        return (
+                          <div
+                            key={day}
+                            className="flex items-center space-x-2 border p-2 rounded-md"
+                          >
+                            <Checkbox
+                              checked={checked}
+                              onCheckedChange={(isChecked) =>
+                                handleWeekdayToggle(
+                                  day as WeekdayEnum,
+                                  !!isChecked
+                                )
+                              }
+                            />
+                            <Label className="text-sm">{day}</Label>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

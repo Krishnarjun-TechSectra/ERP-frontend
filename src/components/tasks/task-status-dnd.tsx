@@ -4,7 +4,7 @@ import { Column } from "./task-column";
 import { ModalProof } from "./dialogs/modal-proof";
 import { TaskDetailsModal } from "./dialogs/task-details.dialog";
 import { TaskStatusEnum } from "@erp/shared-schema";
-import type { TaskSchemaType } from "@erp/shared-schema";
+// import type { TaskSchema } from "@erp/shared-schema";
 import NoDataFound from "../ui/no-data-found-card";
 import Error from "../ui/error-card";
 import { Loading } from "../ui/loading-card";
@@ -15,14 +15,14 @@ export default function KanbanBoard({
   isError,
   isLoading,
 }: {
-  tasks: TaskSchemaType[];
+  tasks: any[];
   isError: boolean;
   isLoading: boolean;
 }) {
-  const [proofModalTask, setProofModalTask] = useState<TaskSchemaType | null>(
+  const [proofModalTask, setProofModalTask] = useState<any | null>(
     null,
   );
-  const [selectedTask, setSelectedTask] = useState<TaskSchemaType | null>(null);
+  const [selectedTask, setSelectedTask] = useState<any | null>(null);
 
   const {
     mutate: updateTask,
@@ -72,7 +72,7 @@ export default function KanbanBoard({
   };
 
   // ✅ Called when user confirms proof submission in the modal
-  const handleConfirmProof = (task: TaskSchemaType, proofText: string) => {
+  const handleConfirmProof = (task: any, proofText: string) => {
     updateTask({
       id: task.id,
       data: {

@@ -1,6 +1,6 @@
 import { formatDateString } from "@/lib/utils/date-parser";
 import { useDraggable } from "@dnd-kit/core";
-import { TaskSchemaType } from "@erp/shared-schema";
+import { TaskInstanceSchema } from "@erp/shared-schema";
 import { Calendar } from "lucide-react";
 import { useState } from "react";
 
@@ -8,8 +8,8 @@ export const TaskCard = ({
   task,
   onClick,
 }: {
-  task: TaskSchemaType;
-  onClick: (task: TaskSchemaType) => void;
+  task: any;
+  onClick: (task: any) => void;
 }) => {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({

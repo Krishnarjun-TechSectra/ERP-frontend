@@ -1,7 +1,7 @@
 import { apiClient } from "@/lib/api-client";
-import { CreateKpiDto, UpdateKpiDto } from "@erp/shared-schema";
+import { CreateKpiDtoType, UpdateKpiDtoType } from "@erp/shared-schema";
 
-export async function createKpi(data: CreateKpiDto) {
+export async function createKpi(data: CreateKpiDtoType) {
   return apiClient("/kpi", {
     method: "POST",
     body: JSON.stringify(data),
@@ -20,7 +20,7 @@ export async function getKpiById(id: string) {
   });
 }
 
-export async function updateKpi(id: string, data: UpdateKpiDto) {
+export async function updateKpi(id: string, data: UpdateKpiDtoType) {
   return apiClient(`/kpi/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),

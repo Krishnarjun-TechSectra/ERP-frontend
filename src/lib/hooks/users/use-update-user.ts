@@ -1,5 +1,5 @@
 import { updateUser } from "@/services/users";
-import { UpdateUserDTO } from "@erp/shared-schema";
+import { UpdateUserDtoType } from "@erp/shared-schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
@@ -7,7 +7,7 @@ export function useUpdateUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateUserDTO }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateUserDtoType }) =>
       updateUser(id, data),
     onSuccess: () => {
       toast.success("User updated successfully!");

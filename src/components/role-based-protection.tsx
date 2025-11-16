@@ -23,8 +23,6 @@ export function withRoleProtection<P extends object>(
     const router = useRouter();
     const { user, loading } = useAuth();
 
-    // Optional: you can debug the current user
-    console.log("Authenticated User:", user);
 
     if (loading) {
       // Still verifying auth status

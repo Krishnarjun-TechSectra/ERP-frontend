@@ -1,5 +1,5 @@
 import TaskFilter from "./task-filter";
-import { TaskFilterDTO } from "@erp/shared-schema/";
+import { TaskFilterDtoType } from "@erp/shared-schema/";
 import { useGetTasks } from "@/lib/hooks/tasks/use-gettask.";
 import { useState } from "react";
 import TaskManagerLayout from "@/app/task-manager/shared-layout";
@@ -10,10 +10,10 @@ import KanbanBoard from "./task-status-dnd";
 import CreateKpiDialog from "./dialogs/create-kpi-dialog";
 
 export const TaskBoardEmployee = () => {
-  const [filters, setFilters] = useState<TaskFilterDTO>({});
+  const [filters, setFilters] = useState<TaskFilterDtoType>({});
   const { data: tasks, isLoading, isError, refetch } = useGetTasks(filters);
 
-  const handleFilterChange = (newFilters: TaskFilterDTO) => {
+  const handleFilterChange = (newFilters: TaskFilterDtoType) => {
     setFilters(newFilters);
     // optional: push filters to URL or trigger API calls
   };

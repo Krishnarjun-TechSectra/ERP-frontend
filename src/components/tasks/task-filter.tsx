@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import {
-  ViewTypeEnum,
-  TaskFilterDTO,
+  TaskFilterDtoType,
   TaskStatusEnum,
+  ViewTypeEnum,
 } from "@erp/shared-schema";
 import {
   Popover,
@@ -25,8 +25,8 @@ import {
 import { useUsers } from "@/lib/hooks/users/use-user";
 
 interface TaskFilterProps {
-  initialFilters?: Partial<TaskFilterDTO>;
-  onFilterChange: (filters: TaskFilterDTO) => void;
+  initialFilters?: Partial<TaskFilterDtoType>;
+  onFilterChange: (filters: TaskFilterDtoType) => void;
   showDate?: boolean;
   showStatus?: boolean;
   showUser?: boolean;
@@ -41,7 +41,7 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
   showUser = false,
   className = "",
 }) => {
-  const [filters, setFilters] = useState<TaskFilterDTO>({
+  const [filters, setFilters] = useState<TaskFilterDtoType>({
     viewType: initialFilters.viewType ?? ViewTypeEnum.DAILY,
     ...initialFilters,
   });
@@ -50,9 +50,9 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
 
   const { data: users = [], isLoading: usersLoading } = useUsers();
 
+
   const handleDateChange = (selectedDate?: Date) => {
-    console.log("selected Date", selectedDate);
-    const updated: TaskFilterDTO = {
+    const updated: TaskFilterDtoType = {
       ...filters,
       selectedDate: selectedDate
         ? selectedDate.toLocaleDateString("sv-SE")
@@ -63,9 +63,10 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
     setCalendarOpen(false);
   };
 
+
   const handleViewTypeChange = (viewType: ViewTypeEnum | string) => {
     if (!viewType || viewType === "") return;
-    const updated: TaskFilterDTO = {
+    const updated: TaskFilterDtoType = {
       ...filters,
       viewType: viewType as ViewTypeEnum,
       selectedDate: filters.selectedDate, // preserve
@@ -75,13 +76,13 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
   };
 
   const handleStatusChange = (status: TaskStatusEnum) => {
-    const updated: TaskFilterDTO = { ...filters, status };
+    const updated: TaskFilterDtoType = { ...filters, status };
     setFilters(updated);
     onFilterChange(updated);
   };
 
   const handleUserChange = (userId: string) => {
-    const updated: TaskFilterDTO = {
+    const updated: TaskFilterDtoType = {
       ...filters,
       assignedUserId: userId === "all" ? undefined : userId,
     };
@@ -98,8 +99,8 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
   const handleClear = () => {
     setFilters({
       viewType: ViewTypeEnum.DAILY,
-    } as TaskFilterDTO);
-    onFilterChange({ viewType: ViewTypeEnum.DAILY } as TaskFilterDTO);
+    } as TaskFilterDtoType);
+    onFilterChange({ viewType: ViewTypeEnum.DAILY } as TaskFilterDtoType);
   };
 
   const selectedDate = filters.selectedDate

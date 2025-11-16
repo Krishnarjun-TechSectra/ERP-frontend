@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { CreateKpiSchema } from "@erp/shared-schema";
+import { CreateKpiDto } from "@erp/shared-schema";
 import { createKpi, getKpis } from "@/services/kpi";
 
 export async function GET() {
@@ -18,7 +18,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const parsed = CreateKpiSchema.parse(body);
+    const parsed = CreateKpiDto.parse(body);
     const data = await createKpi(parsed);
     return NextResponse.json(data, { status: 201 });
   } catch (error: any) {

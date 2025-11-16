@@ -1,6 +1,5 @@
 import { formatDateString } from "@/lib/utils/date-parser";
 import { TaskPriorityBgColorMap } from "@/lib/utils/task-status-color";
-import { TaskSchemaType } from "@erp/shared-schema";
 import { AlertCircle, Calendar } from "lucide-react";
 
 export default function OverdueTaskCard({ task }: { task: any }) {
