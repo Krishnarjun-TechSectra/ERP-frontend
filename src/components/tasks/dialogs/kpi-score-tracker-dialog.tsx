@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useGetKpiScore } from "@/lib/hooks/kpi/use-get-kpi-score";
 import { RotateCcw } from "lucide-react";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 type KpiBackendType = {
   kpiId?: string;
@@ -49,7 +50,7 @@ export default function KpiScoreDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="mt-4 space-y-3 max-h-[60vh] overflow-y-auto ">
+        <div className="mt-4 space-y-3 max-h-[60vh] overflow-y-auto scrollbar-overlay">
           {isLoading && (
             <div className="py-8 text-center text-sm">Loading KPI scores…</div>
           )}
@@ -107,6 +108,9 @@ export default function KpiScoreDialog({
                         {k.totalTasks != null
                           ? `${k.completedOnTime ?? 0}/${k.totalTasks} tasks completed on time`
                           : "No task data"}
+                        {k.completedLate && k.completedLate > 0 && (
+                          <div className="text-xs mt-1 text-red-400">{k.completedLate} tasks completed late</div>
+                        )}
                       </div>
                     </div>
 
@@ -158,7 +162,9 @@ export default function KpiScoreDialog({
           <Button size="sm" variant="outline" onClick={() => refetch()}>
             <RotateCcw /> Refresh
           </Button>
-          <Button>Close</Button>
+          <DialogClose asChild>
+            <Button>Close</Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

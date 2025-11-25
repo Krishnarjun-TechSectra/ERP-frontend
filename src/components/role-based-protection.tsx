@@ -12,7 +12,7 @@ interface WithRoleProtectionOptions {
 
 export function withRoleProtection<P extends object>(
   WrappedComponent: React.ComponentType<P>,
-  { allowedRoles }: WithRoleProtectionOptions
+  { allowedRoles }: WithRoleProtectionOptions,
 ) {
   const RoleProtectedComponent: React.FC<P> = (props) => {
     const router = useRouter();
@@ -29,7 +29,11 @@ export function withRoleProtection<P extends object>(
     }, [user, loading, router]);
 
     if (loading) {
-      return <div className="h-screen flex justify-center items-center"><Loader2 className="w-8 h-8 text-blue-500 animate-spin mx-auto" />;</div>
+      return (
+        <div className="h-screen flex justify-center items-center">
+          <Loader2 className="w-8 h-8 text-blue-500 animate-spin mx-auto" />;
+        </div>
+      );
     }
 
     if (!user) {
