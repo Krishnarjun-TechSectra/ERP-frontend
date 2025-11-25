@@ -32,3 +32,9 @@ export async function deleteKpi(id: string) {
     method: "DELETE",
   });
 }
+
+export async function getKpiScore() {
+  return apiClient("/kpi/kpi-score", {
+    method: "GET",
+  });
+}

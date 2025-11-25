@@ -6,6 +6,7 @@ import CreateTaskDialog from "./dialogs/create-task-dialog";
 import KanbanBoard from "./task-status-dnd";
 import CreateKpiDialog from "./dialogs/create-kpi-dialog";
 import { useAuth } from "../../../context/auth-context";
+import KpiScoreDialog from "./dialogs/kpi-score-tracker-dialog";
 
 export const TaskBoardEmployee = () => {
   const { user } = useAuth();
@@ -52,6 +53,7 @@ export const TaskBoardEmployee = () => {
           <p className="text-gray-600">Manage and track your tasks easily</p>
         </div>
         <div className="flex gap-2">
+          <KpiScoreDialog/>
           <CreateKpiDialog />
           <CreateTaskDialog />
         </div>
