@@ -42,7 +42,7 @@ export default function CreateKpiDialog() {
       colorCode: selectedColor,
     });
 
-    console.log(result)
+    console.log(result);
 
     if (!result.success) {
       const message = result.error.issues[0]?.message ?? "Invalid input";
