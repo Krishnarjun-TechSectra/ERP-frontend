@@ -21,8 +21,9 @@ import {
   TaskStatusEnum,
   ViewTypeEnum,
 } from "@erp/shared-schema";
-import { useGetTasks } from "@/lib/hooks/tasks/use-gettask.";
+import { useGetTasks } from "@/lib/hooks/tasks/use-gettask";
 import { useAuth } from "../../../context/auth-context";
+import CombinedLeaderBoard from "./combined-leaderboard/combined-leaderboard";
 
 const TaskDashboardPage = () => {
   const { user } = useAuth();
@@ -152,7 +153,7 @@ const TaskDashboardPage = () => {
           {/* Leaderboard + Overdue Tasks */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TeamLeaderBoard />
-            <OverdueTasks tasksOverdue={tasksOverdue} />
+            <CombinedLeaderBoard/>
           </div>
         </>
       )}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Kanban, LayoutDashboard } from "lucide-react";
+import { Kanban, LayoutDashboard, Target } from "lucide-react";
 import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
@@ -77,6 +77,17 @@ const TaskManagerNavbar = () => {
             </span>
           </Link>
         </Button>
+        <Button
+          asChild
+          variant={pathname === "/task-manager/goal" ? "default" : "secondary"}
+        >
+          <Link href="/task-manager/goal">
+            <span className="flex items-center gap-2">
+              <Target />
+              Goals
+            </span>
+          </Link>
+        </Button>
       </section>
 
       <div className="flex justify-end items-center gap-4">
@@ -86,7 +97,7 @@ const TaskManagerNavbar = () => {
 
         <Button onClick={signOut}>Signout</Button>
 
-        {pathname === "/task-manager/board" &&
+        {/* {pathname === "/task-manager/board" &&
           user?.user_metadata?.role === "admin" && (
             <section className="flex items-center space-x-2">
               <Label htmlFor="admin">Admin</Label>
@@ -96,7 +107,7 @@ const TaskManagerNavbar = () => {
                 onCheckedChange={handleToggle}
               />
             </section>
-          )}
+          )} */}
       </div>
     </nav>
   );

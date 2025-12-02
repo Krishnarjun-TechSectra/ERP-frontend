@@ -61,7 +61,7 @@ export const TaskDetailsModal = ({ task, onClose }: any) => {
           </span>
         </div>
 
-        {/* KPI */}
+        {/* KPI
         {task.kpi && (
           <div
             className="rounded-md p-3 text-sm flex items-center font-semibold"
@@ -70,7 +70,7 @@ export const TaskDetailsModal = ({ task, onClose }: any) => {
             <Layers color={task.kpi.colorCode} className="mr-2" />
             KPI: <p style={{ color: task.kpi.colorCode }}>{task.kpi.title}</p>
           </div>
-        )}
+        )} */}
 
         {/* Description */}
         {task.description && (

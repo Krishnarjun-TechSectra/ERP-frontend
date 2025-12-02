@@ -1,6 +1,6 @@
 import TaskFilter from "./task-filter";
 import { TaskFilterDtoType, ViewTypeEnum } from "@erp/shared-schema/";
-import { useGetTasks } from "@/lib/hooks/tasks/use-gettask.";
+import { useGetTasks } from "@/lib/hooks/tasks/use-gettask";
 import { useEffect, useState } from "react";
 import CreateTaskDialog from "./dialogs/create-task-dialog";
 import KanbanBoard from "./task-status-dnd";
@@ -42,8 +42,6 @@ export const TaskBoardEmployee = () => {
   // ⏳ Wait for user + filters to initialize
   if (!user || !filters) return <div>Loading task board...</div>;
 
-  console.log(user);
-
   return (
     <>
       {/* Header */}
@@ -53,9 +51,9 @@ export const TaskBoardEmployee = () => {
           <p className="text-gray-600">Manage and track your tasks easily</p>
         </div>
         <div className="flex gap-2">
-          <KpiScoreDialog />
-          <CreateKpiDialog />
           <CreateTaskDialog />
+          {/* <KpiScoreDialog />
+          <CreateKpiDialog /> */}
         </div>
       </div>
 

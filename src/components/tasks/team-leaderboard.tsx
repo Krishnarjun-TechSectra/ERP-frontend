@@ -6,7 +6,6 @@ import LeaderboardCard from "./cards/leader-board.card";
 import { useLeaderboard } from "@/lib/hooks/leaderboard/use-leaderboard";
 import { LeaderboardEntry } from "@/services/leaderboard";
 import { Loading } from "../ui/loading-card";
-import { isErrored } from "stream";
 import Error from "../ui/error-card";
 
 const TeamLeaderBoard = () => {

@@ -29,7 +29,6 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { Calendar } from "../../ui/calendar";
-import { useGetKpis } from "@/lib/hooks/kpi/use-getkpi";
 import { useUsers } from "@/lib/hooks/users/use-user";
 import z from "zod";
 import { toast } from "react-toastify";
@@ -42,19 +41,13 @@ import {
   RecurringFrequencyEnum,
   WeekdayEnum,
 } from "@erp/shared-schema";
-
-/**
- * NOTE:
- * - Backend expects kpiId: string().uuid() (non-optional). If you want KPI to be optional,
- *   change backend to make kpiId nullable/optional and then update FE accordingly.
- */
+import { useAuth } from "../../../../context/auth-context";
 
 /* ------------------------- Initial state that matches CreateTaskDtoType ------------------------- */
 const getInitialState = (): CreateTaskDtoType => ({
   title: "",
   description: "",
   assignedUserId: "",
-  kpiId: "", // must be a UUID before submit (backend requires this). See NOTE above.
   priority: TaskPriorityEnum.MEDIUM,
   isRecurring: false,
   recurringFrequency: null,
@@ -69,23 +62,32 @@ const getInitialState = (): CreateTaskDtoType => ({
 export default function CreateTaskDialog() {
   const [form, setForm] = useState<CreateTaskDtoType>(getInitialState());
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
 
-  const { data: kpis = [], isLoading: kpiLoading } = useGetKpis();
   const { data: users = [], isLoading: usersLoading } = useUsers();
   const { mutate: createTask, isPending } = useCreateTask();
 
-  // Optional: if you want to default kpi to the first KPI automatically uncomment:
+  const isAdmin = user?.user_metadata?.role === "admin";
+
+  // When user object arrives (or changes), if user is NOT admin, lock assignedUserId to the current user.
   useEffect(() => {
-    if (kpis && kpis.length > 0 && form.kpiId === "") {
-      // do not auto-set: we avoid forcing a KPI. If you want an auto default uncomment:
-      // setForm(prev => ({ ...prev, kpiId: kpis[0].id }));
+    if (!isAdmin && user?.id) {
+      setForm((prev) => ({ ...prev, assignedUserId: user.id }));
     }
+  }, [isAdmin, user?.id]);
+
+  // When dialog opens, ensure we have the right assignedUserId for non-admins.
+  useEffect(() => {
+    if (open && !isAdmin && user?.id) {
+      setForm((prev) => ({ ...prev, assignedUserId: user.id }));
+    }
+    // when opened by admin, don't override
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [kpis]);
+  }, [open]);
 
   const handleChange = <K extends keyof CreateTaskDtoType>(
     key: K,
-    value: CreateTaskDtoType[K],
+    value: CreateTaskDtoType[K]
   ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
@@ -149,33 +151,27 @@ export default function CreateTaskDialog() {
   };
 
   const handleSubmit = () => {
-    // Quick FE pre-check for KPI: your backend requires a UUID. If empty => show helpful toast.
-    if (!form.kpiId) {
-      toast.error(
-        "Please select a KPI or update the backend schema if KPI should be optional.",
-      );
-      return;
-    }
-
     // Prepare object for zod parsing: convert string dates to Date objects
     const payload = transformForValidation(form);
 
     try {
       // parse with CreateTaskSchema which contains superRefine rules
-      const validated = CreateTaskSchema.parse(payload);
+      // const validated = CreateTaskSchema.parse(payload);
 
       // If validated, call mutate
-      createTask(validated, {
+      createTask(payload, {
         onSettled: () => {
           setForm(getInitialState());
           setOpen(false);
         },
         onError: (err: any) => {
           // The hook may return structured error. Show generic fallback
+
           toast.error(err?.message || "Failed to create task");
         },
       });
     } catch (err) {
+      console.log(err);
       if (err instanceof z.ZodError) {
         // show first issue message for user friendliness
         const first = err.issues[0];
@@ -223,52 +219,47 @@ export default function CreateTaskDialog() {
             />
           </div>
 
-          {/* KPI */}
-          <div>
-            <Label className="text-sm font-medium mb-1">KPI (required)</Label>
-            <Select
-              value={form.kpiId}
-              onValueChange={(val) => handleChange("kpiId", val)}
-              disabled={kpiLoading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a KPI" />
-              </SelectTrigger>
-              <SelectContent>
-                {/* No 'no_kpi' option because backend requires a UUID */}
-                {kpis?.map((kpi: any) => (
-                  <SelectItem key={kpi.id} value={kpi.id}>
-                    <div
-                      className="w-3 h-3 rounded-full mr-1 inline-block"
-                      style={{ backgroundColor: kpi.colorCode }}
-                    />
-                    {kpi.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           <div className="grid grid-cols-2 gap-3">
             {/* Assign To */}
             <div>
               <Label className="text-sm font-medium mb-1">Assign To</Label>
-              <Select
-                value={form.assignedUserId}
-                onValueChange={(val) => handleChange("assignedUserId", val)}
-                disabled={usersLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select assignee" />
-                </SelectTrigger>
-                <SelectContent>
-                  {users?.map((user: any) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      {user.name}
+              {/* If not admin -> force the select to user's id and disable changing */}
+              {isAdmin ? (
+                <Select
+                  value={form.assignedUserId}
+                  onValueChange={(val) => handleChange("assignedUserId", val)}
+                  disabled={usersLoading}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select assignee" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users?.map((u: any) => (
+                      <SelectItem key={u.id} value={u.id}>
+                        {u.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                // Non-admin: show a disabled select with only the current user as option/label
+                <Select
+                  value={form.assignedUserId ?? user?.id ?? ""}
+                  onValueChange={() => {
+                    /* noop - select is disabled for non-admins */
+                  }}
+                  disabled
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={user?.name ?? "You"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={user?.id ?? ""}>
+                      {user?.name ?? "You"}
                     </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             {/* Priority */}
@@ -313,6 +304,7 @@ export default function CreateTaskDialog() {
                 <PopoverContent align="start" className="p-0">
                   <Calendar
                     mode="single"
+                    className="w-auto"
                     selected={
                       form.deadline ? new Date(form.deadline) : undefined
                     }
@@ -347,7 +339,7 @@ export default function CreateTaskDialog() {
                   onValueChange={(val) =>
                     handleChange(
                       "recurringFrequency",
-                      val === "" ? null : (val as RecurringFrequencyEnum),
+                      val === "" ? null : (val as RecurringFrequencyEnum)
                     )
                   }
                 >
@@ -411,7 +403,7 @@ export default function CreateTaskDialog() {
                       .filter((day) => day !== WeekdayEnum.SUN)
                       .map((day) => {
                         const checked = (form.recurringWeekDays ?? []).includes(
-                          day as WeekdayEnum,
+                          day as WeekdayEnum
                         );
                         return (
                           <div
@@ -423,7 +415,7 @@ export default function CreateTaskDialog() {
                               onCheckedChange={(isChecked) =>
                                 handleWeekdayToggle(
                                   day as WeekdayEnum,
-                                  !!isChecked,
+                                  !!isChecked
                                 )
                               }
                             />
